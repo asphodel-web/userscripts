@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Dogwhistle Highlighter
-// @namespace    https://github.com/asphodel-web/userscripts
-// @version      2.0
+// @namespace    http://tampermonkey.net/
+// @version      2.1
 // @description  Flags suspected dogwhistle terms and emoji in page text, with per-term context
 // @match        *://*/*
 // @grant        none
@@ -19,11 +19,508 @@
     /* ============================================================
      * 1. Fragment config
      *
-     * `match` may be a string OR an array of strings. All terms in
-     * an array share the same `context` and are shown together in
-     * the panel. Duplicate terms across entries are ignored (first
-     * occurrence wins) and a warning is logged.
+     * Two config sources, resolved once at startup:
+     *
+     *   A) JSON_CONFIG — a JSON string (usually a template literal),
+     *      typically pasted from the Collector script's export.
+     *      If non-empty and valid, it fully overrides configFragments.
+     *      Format: [ { "match": string | string[], "context": string }, ... ]
+     *
+     *   B) configFragments — the JS-literal default config.
+     *      Used when JSON_CONFIG is empty, or as a fallback when
+     *      JSON_CONFIG fails to parse.
      * ============================================================ */
+    const JSON_CONFIG = `
+    [
+  {
+    "match": [
+      "😭💢",
+      "💢😭",
+      "🍯🐻",
+      "🐻🍯",
+      "🧸🍯",
+      "🍯🧸",
+      "🍭🧸",
+      "🧸🍭",
+      "🧼🧸",
+      "🧸🧼",
+      "🪀🧃",
+      "🧃🪀",
+      "🍟🐣",
+      "🐣🍟",
+      "🕊️🍭",
+      "🍭🕊️",
+      "🕊️🌈",
+      "🌈🕊️",
+      "🕊️⚔️",
+      "⚔️🕊️"
+    ],
+    "context": "It is often used as a dog whistle for shotacons (attracted to a masculine minor). Used in bios (biographies), hashtags and display names."
+  },
+  {
+    "match": [
+      "🌈🍓",
+      "🍓🌈"
+    ],
+    "context": "It is often used as a dog whistle for radqueers generally. Used in bios (biographies), hashtags and display names."
+  },
+  {
+    "match": [
+      "πφ"
+    ],
+    "context": "This combination of letters is a dogwhistle which means 'paraphile'."
+  },
+  {
+    "match": [
+      "ζ"
+    ],
+    "context": "This is the main symbol used by zoophiles, it is also a regular letter of the greek alphabet (zeta)."
+  },
+  {
+    "match": [
+      "🌈🍖",
+      "🍖🌈"
+    ],
+    "context": "Pro-ship emoji combination dogwhistle."
+  },
+  {
+    "match": [
+      "🍋🌈",
+      "🌈🍋"
+    ],
+    "context": "Pro-fic emoji combination dogwhistle."
+  },
+  {
+    "match": [
+      "🦥🌈"
+    ],
+    "context": "Slothqueer"
+  },
+  {
+    "match": [
+      "🚫🥤"
+    ],
+    "context": "Nemaguaqueer"
+  },
+  {
+    "match": [
+      "⭕️🌈"
+    ],
+    "context": "Radjectum"
+  },
+  {
+    "match": [
+      "🤍🗝️"
+    ],
+    "context": "Pro-consent, note that this is an emoji dog whistle, so the context in which consent is supported is probably irregular."
+  },
+  {
+    "match": [
+      "😵🩶"
+    ],
+    "context": "Necrsensual consent"
+  },
+  {
+    "match": [
+      "🔄🩹"
+    ],
+    "context": "transharmed"
+  },
+  {
+    "match": [
+      "🪼☁️"
+    ],
+    "context": "transage"
+  },
+  {
+    "match": [
+      "🩸📍"
+    ],
+    "context": "permapain"
+  },
+  {
+    "match": [
+      "🎶💙"
+    ],
+    "context": "miku fickin"
+  },
+  {
+    "match": [
+      "🍋💦"
+    ],
+    "context": "piss kink"
+  },
+  {
+    "match": [
+      "💧☂️"
+    ],
+    "context": "dacryphilia"
+  },
+  {
+    "match": [
+      "🍮🍓"
+    ],
+    "context": "subliminal user"
+  },
+  {
+    "match": [
+      "🎶🌙"
+    ],
+    "context": "ug sub user"
+  },
+  {
+    "match": [
+      "🦴🌷"
+    ],
+    "context": "maishe"
+  },
+  {
+    "match": [
+      "Ⰱ"
+    ],
+    "context": "unhealthy para"
+  },
+  {
+    "match": [
+      "⎇"
+    ],
+    "context": "Alterhuman"
+  },
+  {
+    "match": [
+      "≗"
+    ],
+    "context": "egosyntonic para"
+  },
+  {
+    "match": [
+      "θη"
+    ],
+    "context": "Trauma(tized) paraphile, the paraphilia is trauma induced."
+  },
+  {
+    "match": [
+      "💭🧿"
+    ],
+    "context": "Fantapara, paraphilic attraction to the imagined."
+  },
+  {
+    "match": [
+      "🥄⚙️"
+    ],
+    "context": "Auto-paraphilia, attraction to oneself in a paraphilic scenario."
+  },
+  {
+    "match": [
+      "🍳⚙️"
+    ],
+    "context": "Pan Auto-Paraphilia, attraction to oneself in all scenarios."
+  },
+  {
+    "match": [
+      "☀️🧸",
+      "🧸🧶",
+      "🌸✨",
+      "🌟⏲️",
+      "🎀🍦"
+    ],
+    "context": "Minor Attracted Minor/Minor MAP, a minor that is attracted to other minors."
+  },
+  {
+    "match": [
+      "🧃🍸",
+      "🧸🍸",
+      "🍧🍸"
+    ],
+    "context": "Minor MAP V1 - that is, a Minor Attracted Person who is a minor."
+  },
+  {
+    "match": [
+      "🧃☀️",
+      "🧸☀️",
+      "🍧☀️"
+    ],
+    "context": "Minor MAP V2 - that is, a Minor Attracted Person who is a minor."
+  },
+  {
+    "match": [
+      "🧃🗺️",
+      "🧸🗺️",
+      "🍧🗺️"
+    ],
+    "context": "Minor MAP V3 - that is, a Minor Attracted Person who is a minor."
+  },
+  {
+    "match": [
+      "🗺️💝"
+    ],
+    "context": "MAPophilia, people who are attracted to MAPs."
+  },
+  {
+    "match": [
+      "🍇🍸"
+    ],
+    "context": "Infantophilia, attraction to infants."
+  },
+  {
+    "match": [
+      "🍓🍸"
+    ],
+    "context": "Nepiophilia, attraction to toddlers and infants."
+  },
+  {
+    "match": [
+      "🍍🍸"
+    ],
+    "context": "Pedophilia, attraction to the prepubescent."
+  },
+  {
+    "match": [
+      "🍒🍸"
+    ],
+    "context": "Hebephilia, attraction to the pubescent."
+  },
+  {
+    "match": [
+      "🫒🍸"
+    ],
+    "context": "Ephebephilia, attraction to the post-prepubescent."
+  },
+  {
+    "match": [
+      "🐰🎀"
+    ],
+    "context": "It is often used as a dog whistle for lolicons (attracted to a feminine minor). Used in bios (biographies), hashtags and display names."
+  },
+  {
+    "match": [
+      "1488"
+    ],
+    "context": "Nazi white supremacist dogwhistle. The 14 is the white supremacist part and corresponds to the fourteen word slogan \"We must secure the existence of our people and a future for white children,\" spoken by American neo-Nazi David Eden Lane. The rest of the slogan reads: \"because the beauty of the White Aryan woman must not perish from the earth.\"\n\nThe 88 is the Nazi part, it refers to the 8th letter of the alphabet, H. So 88 is HH, which means \"Heil Hitler\"."
+  },
+  {
+    "match": [
+      "1312"
+    ],
+    "context": "All Cops Are Bastards, from the acronym ACAB, with the numbers each corresponding to a letter in the alphabet. This is a dogwhistle associated with anti-fascists and anarchists, as well as general police abolitionists."
+  },
+  {
+    "match": [
+      "💀🍭"
+    ],
+    "context": "It is often used as a dog whistle for cronacons (attracted to a non-binary minor). Used in bios (biographies), hashtags and display names."
+  },
+  {
+    "match": [
+      "🎒🍭"
+    ],
+    "context": "It is often used as a dog whistle for kodocons (attracted to a minor). Used in bios (biographies), hashtags and display names."
+  },
+  {
+    "match": [
+      "🔖🍸",
+      "🔖☀️",
+      "🔖🗺️"
+    ],
+    "context": "Fictional MAP, Minor Attracted People who are attracted only to fictional minors."
+  },
+  {
+    "match": [
+      "💭🗺️",
+      "💭🍸",
+      "💭☀️"
+    ],
+    "context": "FantaMAP, Minor Attracted People who are only attracted to minors in their imagination."
+  },
+  {
+    "match": [
+      "🗺️💤"
+    ],
+    "context": "SomnoMAP, Minor Attracted People who are also somnophiles (sexually aroused by someone being asleep)."
+  },
+  {
+    "match": [
+      "🍼🥄",
+      "✨🧸",
+      "🍎🍑"
+    ],
+    "context": "AutoMAP, minors who are Minor Attracted Persons and attracted to themselves or people who are aroused by the thought of being a minor."
+  },
+  {
+    "match": [
+      "🧸🍓"
+    ],
+    "context": "Autonepiophilia, Oneself Being a Toddler/Infant Attracted"
+  },
+  {
+    "match": [
+      "🧸🍍"
+    ],
+    "context": "Autopedophilia, Oneself Being Prepubescent Attracted"
+  },
+  {
+    "match": [
+      "🧸🍒"
+    ],
+    "context": "Autohebephilia, Oneself Being Pubescent Attracted"
+  },
+  {
+    "match": [
+      "🧸🫒"
+    ],
+    "context": "Autoephebephilia, Oneself Being Post-Prepubescent Attracted"
+  },
+  {
+    "match": [
+      "🧃💤"
+    ],
+    "context": "SomnoAAM, an Adult Attracted Minors who are also a somnophiles (sexually aroused by someone being asleep)."
+  },
+  {
+    "match": [
+      "🌸🥤"
+    ],
+    "context": "\"AAM Loli\", an Adult Attracted Minor who is feminine."
+  },
+  {
+    "match": [
+      "🫐🥤"
+    ],
+    "context": "\"AAM Shota\", an Adult Attracted Minor who is masculine."
+  },
+  {
+    "match": [
+      "🍀🥤"
+    ],
+    "context": "\"AAM Kodo\", an Adult Attracted Minor who is non-binary."
+  },
+  {
+    "match": [
+      "🌻🥤"
+    ],
+    "context": "\"AAM Nana/Crona\", an Adult Attracted Minor who is androgynous."
+  },
+  {
+    "match": [
+      "🧃🥤"
+    ],
+    "context": "\"AAM Xip\", an \"Adult Attracted Xeno-Aligned Minor\"."
+  },
+  {
+    "match": [
+      "⚠️💫"
+    ],
+    "context": "This can stand for Adumi (ADUlt + MInor) which is an alternative word for pedophilia."
+  },
+  {
+    "match": [
+      "🌙 🍺"
+    ],
+    "context": "Teleiophilia, attraction to adults."
+  },
+  {
+    "match": [
+      "👥🌼"
+    ],
+    "context": "Autoincestphilia, paraphilic attraction to people related to you being attracted to you."
+  },
+  {
+    "match": [
+      "🔖🌹",
+      "🔖🥀"
+    ],
+    "context": "Ficto-Biastophilia, someone who is attracted to fictional rape."
+  },
+  {
+    "match": [
+      "🍸🌹"
+    ],
+    "context": "Dopephilia, attraction to sexually assaulting a child."
+  },
+  {
+    "match": [
+      "💊🌹"
+    ],
+    "context": "Narkobiastophilia, attraction to drugging and raping."
+  },
+  {
+    "match": [
+      "🌹🥩"
+    ],
+    "context": "Anthropophagolagnia, attraction to raping and cannibalizing."
+  },
+  {
+    "match": [
+      "❣️🧷"
+    ],
+    "context": "Masochism, attraction to being hurt."
+  },
+  {
+    "match": [
+      "❣️👁️"
+    ],
+    "context": "Sadism, attraction to hurting others or others being in pain."
+  },
+  {
+    "match": [
+      "🤕❌"
+    ],
+    "context": "Antisadism, attraction to 'antis' being in pain. An anti is someone who in some way opposes radqueers."
+  },
+  {
+    "match": [
+      "🤕🍸"
+    ],
+    "context": "Pedosadism, attraction to underage people being in pain."
+  },
+  {
+    "match": [
+      "🪦🗺️"
+    ],
+    "context": "NecroMAP, a Minor Attracted Person who is a necrophile (sexual attraction or acts involving corpses)."
+  },
+  {
+    "match": [
+      "🥩♀️",
+      "🥩👧"
+    ],
+    "context": "Gynophagia, attraction to cooking and or eating human females."
+  },
+  {
+    "match": [
+      "🌄🫶",
+      "🌱☂️",
+      "🪴🌹"
+    ],
+    "context": "Botanophilia, attraction to plants."
+  },
+  {
+    "match": [
+      "⚙️🐾"
+    ],
+    "context": "Autozoophilia, attraction to oneself as an animal."
+  },
+  {
+    "match": [
+      "🦠🐱💜"
+    ],
+    "context": "FIVphilia, attraction to feline Immunodeficiency virus."
+  },
+  {
+    "match": [
+      "🍼🐾"
+    ],
+    "context": "Zoopedophilia, attraction to young animals."
+  },
+  {
+    "match": [
+      "😽🍭"
+    ],
+    "context": "Kittoamory, attraction to kittens as a type of zoophilia."
+  }
+]
+`;
+
     const configFragments = [
         {
             match: ["😭💢", "💢😭", "🍯🐻", "🐻🍯", "🧸🍯", "🍯🧸", "🍭🧸", "🧸🍭", "🧼🧸", "🧸🧼", "🪀🧃", "🧃🪀", "🍟🐣", "🐣🍟", "🕊️🍭", "🍭🕊️", "🕊️🌈", "🌈🕊️", "🕊️⚔️", "⚔️🕊️", "🧸☀️", "☀️🧸"],
@@ -33,99 +530,68 @@
             match: ["🌈🍓", "🍓🌈"],
             context: "It is often used as a dog whistle for radqueers generally. Used in bios (biographies), hashtags and display names."
         },
-        {
-            match: ["πφ"],
-            context: "This combination of letters means 'paraphile'."
-        },
-        {
-            match: ["ζ"],
-            context: "This is the main symbol used by zoophiles, it is also a regular letter of the greek alphabet."
-        },
-        {
-            match: ["🌈🍖", "🍖🌈"],
-            context: "Pro-ship emoji combination."
-        },
-        {
-            match: ["🍋🌈", "🌈🍋"],
-            context: "Pro-fic emoji combination."
-        },
-        {
-            match: ["🦥🌈"],
-            context: "Slothqueer"
-        },
-        {
-            match: ["🚫🥤"],
-            context: "Nemaguaqueer"
-        },
-        {
-            match: ["⭕️🌈"],
-            context: "Radjectum"
-        },
-        {
-            match: ["🤍🗝️"],
-            context: "Pro-consent, note that this is an emoji dog whistle, so the context in which consent is supported is probably irregular."
-        },
-        {
-            match: ["😵🩶"],
-            context: "Necrsensual consent"
-        },
-        {
-            match: ["🔄🩹"],
-            context: "transharmed"
-        },
-        {
-            match: ["🪼☁️"],
-            context: "transage"
-        },
-        {
-            match: ["🩸📍"],
-            context: "permapain"
-        },
-        {
-            match: ["🎶💙"],
-            context: "miku fickin"
-        },
-        {
-            match: ["🍋💦"],
-            context: "piss kink"
-        },
-        {
-            match: ["💧☂️"],
-            context: "dacryphilia"
-        },
-        {
-            match: ["🍮🍓"],
-            context: "subliminal user"
-        },
-        {
-            match: ["🎶🌙"],
-            context: "ug sub user"
-        },
-        {
-            match: ["🦴🌷"],
-            context: "maishe"
-        },
-        {
-            match: ["Ⰱ"],
-            context: "unhealthy para"
-        },
-        {
-            match: ["⎇"],
-            context: "alterhuman"
-        },
-        {
-            match: ["≗"],
-            context: "egosyntonic para"
-        },
-
-        // String form works too:
-        // { match: "🧸🔪", context: "..." },
+        // ...rest of your default config...
     ];
+
+    function resolveConfig() {
+        const raw = (typeof JSON_CONFIG === 'string') ? JSON_CONFIG.trim() : '';
+        if (!raw) {
+            return { source: 'js', config: configFragments };
+        }
+
+        let parsed;
+        try {
+            parsed = JSON.parse(raw);
+        } catch (e) {
+            console.error('[DH] JSON_CONFIG is not valid JSON:', e.message);
+            if (/Unexpected token|Unexpected string|Unexpected end/i.test(e.message)) {
+                console.error('[DH] Tip: strict JSON does not allow trailing commas or // comments.');
+                console.error('[DH] If you pasted from configFragments, remove the trailing commas.');
+            }
+            console.warn('[DH] Falling back to configFragments.');
+            return { source: 'js', config: configFragments, error: e.message };
+        }
+
+        const entries = Array.isArray(parsed) ? parsed : [parsed];
+        const valid = entries.filter(e =>
+                                     e && typeof e === 'object' &&
+                                     (typeof e.match === 'string' || Array.isArray(e.match)) &&
+                                     typeof e.context === 'string'
+                                    );
+
+        // All entries present but none valid → likely a structural mistake.
+        // Fall back rather than silently disabling the whole script.
+        if (entries.length > 0 && valid.length === 0) {
+            console.error('[DH] JSON_CONFIG parsed, but no entry has the shape { match: string|string[], context: string }.');
+            console.warn('[DH] Falling back to configFragments.');
+            return { source: 'js', config: configFragments, error: 'all entries malformed' };
+        }
+
+        if (valid.length !== entries.length) {
+            console.warn(`[DH] JSON_CONFIG: dropped ${entries.length - valid.length} malformed entries.`);
+        }
+        if (valid.length === 0) {
+            console.warn('[DH] JSON_CONFIG is an empty array — no terms will be highlighted.');
+        }
+
+        return { source: 'json', config: valid };
+    }
+
+    const resolved = resolveConfig();
+    const activeConfig = resolved.config;
+    const configSource = resolved.source;
+
+    if (configSource === 'json') {
+        console.log(`[DH] Using JSON_CONFIG (${activeConfig.length} entr${activeConfig.length === 1 ? 'y' : 'ies'}).`);
+    } else {
+        console.log(`[DH] Using configFragments (${activeConfig.length} entr${activeConfig.length === 1 ? 'y' : 'ies'}).`);
+        if (resolved.error) console.warn('[DH] (fell back from JSON_CONFIG due to the error above)');
+    }
 
     /* ---------- Expand arrays → flat list of {match, context} ---------- */
     const fragments = [];
     const fragmentByMatch = new Map();
-    for (const entry of configFragments) {
+    for (const entry of activeConfig) {
         const terms = Array.isArray(entry.match) ? entry.match : [entry.match];
         for (const term of terms) {
             if (typeof term !== 'string' || term.length === 0) {
@@ -251,6 +717,13 @@
             padding: 12px 16px; border-bottom: 1px solid #eee;
             font-weight: 600; font-size: 14px;
         }
+        .config-badge {
+            font-size: 9px; font-weight: 700; letter-spacing: .5px;
+            background: rgba(255,255,255,.25); color: #fff;
+            padding: 2px 5px; border-radius: 3px;
+            margin-left: 6px; vertical-align: middle;
+            text-transform: uppercase;
+        }
         .panel-header button {
             background: none; border: none; cursor: pointer;
             font-size: 16px; padding: 4px 8px; border-radius: 4px; color: #666;
@@ -305,7 +778,7 @@
     panel.hidden = true;
     panel.innerHTML = `
         <div class="panel-header">
-            <span>Dogwhistle terms</span>
+            <span>Dogwhistle terms <span class="config-badge" hidden>JSON</span></span>
             <button class="close" aria-label="Close">✕</button>
         </div>
         <ul class="panel-list"></ul>
@@ -314,6 +787,9 @@
         </div>
     `;
     shadow.appendChild(panel);
+    if (configSource === 'json') {
+        panel.querySelector('.config-badge').hidden = false;
+    }
 
     const tooltip = document.createElement('div');
     tooltip.className = 'tooltip';
@@ -355,7 +831,7 @@
      * 7. UI refresh — grouped by context
      * ============================================================ */
     const escapeHtml = (s) => s.replace(/[&<>"']/g,
-        c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+                                        c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
     function isVisible(node) {
         if (!node.isConnected) return false;
@@ -413,8 +889,8 @@
             li.className = 'panel-item';
 
             const termsHtml = group.terms
-                .map(({ term }) => `<span class="term-pill">${escapeHtml(term)}</span>`)
-                .join('');
+            .map(({ term }) => `<span class="term-pill">${escapeHtml(term)}</span>`)
+            .join('');
 
             li.innerHTML = `
                 <div class="term">
@@ -438,7 +914,7 @@
      * ============================================================ */
     function showTooltip(frag, x, y, anchor) {
         const linkHtml = anchor
-            ? `<a class="link-action" href="${escapeHtml(anchor.href)}" target="${escapeHtml(anchor.target || '_self')}" rel="noopener noreferrer">Open link →</a>`
+        ? `<a class="link-action" href="${escapeHtml(anchor.href)}" target="${escapeHtml(anchor.target || '_self')}" rel="noopener noreferrer">Open link →</a>`
             : '';
         tooltip.innerHTML = `
             <div class="term">${escapeHtml(frag.match)}</div>
@@ -573,8 +1049,8 @@
 
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
             acceptNode: (n) => scannedTextNodes.has(n)
-                ? NodeFilter.FILTER_REJECT
-                : NodeFilter.FILTER_ACCEPT
+            ? NodeFilter.FILTER_REJECT
+            : NodeFilter.FILTER_ACCEPT
         });
 
         let added = false;
@@ -690,7 +1166,8 @@
      * ============================================================ */
     window.__dhDebug = () => {
         console.group('[DH] Dogwhistle Highlighter diagnostics');
-        console.log('config entries:', configFragments.length);
+        console.log('config source:', configSource === 'json' ? 'JSON_CONFIG' : 'configFragments');
+        console.log('config entries:', activeConfig.length);
         console.log('expanded terms:', fragments.length);
         console.log('first-codepoint buckets:', fragmentsByFirstCodepoint.size);
         console.log('matchedRanges (total):', matchedRanges.size);
@@ -720,8 +1197,8 @@
             const text = a.textContent || '';
             const hits = fragments.filter(f => text.includes(f.match));
             const isScanned = [...a.childNodes]
-                .filter(n => n.nodeType === Node.TEXT_NODE)
-                .every(n => scannedTextNodes.has(n));
+            .filter(n => n.nodeType === Node.TEXT_NODE)
+            .every(n => scannedTextNodes.has(n));
             console.log(
                 `[${i}] text=${JSON.stringify(text)}`,
                 `hits=${hits.length}`,
