@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Dogwhistle Highlighter
-// @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/asphodel-web/userscripts
 // @version      2.0
 // @description  Flags suspected dogwhistle terms and emoji in page text, with per-term context
 // @match        *://*/*
