@@ -55,166 +55,178 @@
       "🕊️⚔️",
       "⚔️🕊️"
     ],
-    "context": "It is often used as a dog whistle for shotacons (attracted to a masculine minor). Used in bios (biographies), hashtags and display names."
+    "context": "Dog whistle used by 'shotacons' — people who express sexual attraction to minors with a masculine presentation. Typically appears in user bios, display names, and hashtags. On its own each emoji pair is innocuous, so treat it as a signal only in those self-identification contexts, not in ordinary posts."
   },
   {
     "match": [
       "🌈🍓",
       "🍓🌈"
     ],
-    "context": "It is often used as a dog whistle for radqueers generally. Used in bios (biographies), hashtags and display names."
+    "context": "Dog whistle for 'radqueer' identity — an umbrella term for users who normalize paraphilic and 'transidentity' labels, often including attraction to minors. Mostly seen in bios, display names, and hashtags. The rainbow alone is a common LGBTQ+ symbol, so require additional context before acting."
   },
   {
     "match": [
       "πφ"
     ],
-    "context": "This combination of letters is a dogwhistle which means 'paraphile'."
+    "context": "Abbreviation of 'paraphile' using Greek letters. Used as a discreet self-identification in bios and usernames. Note that π and φ are ordinary Greek letters, so the sequence only matters as a deliberate identity marker."
   },
   {
     "match": [
-      "ζ"
+      "ζ",
+      "𐤀",
+      "◤✦◢",
+      "💕🕊️"
     ],
-    "context": "This is the main symbol used by zoophiles, it is also a regular letter of the greek alphabet (zeta)."
+    "context": "The zeta symbol is the main self-identification marker for zoophiles (sexual attraction to animals). High false-positive risk: zeta is a standard Greek letter used in maths, science, and Greek text. Flag only when it appears as a standalone identity claim (e.g. alone in a bio, or paired with pro-zoophile slogans)."
   },
   {
     "match": [
       "🌈🍖",
       "🍖🌈"
     ],
-    "context": "Pro-ship emoji combination dogwhistle."
+    "context": "Emoji combination used as a 'pro-ship' dog whistle — the pro-shipping community argues that any fictional content, including sexualized depictions of minors, is acceptable. Found in bios, display names, and hashtags."
   },
   {
     "match": [
       "🍋🌈",
       "🌈🍋"
     ],
-    "context": "Pro-fic emoji combination dogwhistle."
+    "context": "Emoji combination used as a 'pro-fic' dog whistle — a rebranding of the pro-ship stance focused on defending explicit fiction, including content involving minors. Found in bios, display names, and hashtags."
   },
   {
     "match": [
       "🦥🌈"
     ],
-    "context": "Slothqueer"
+    "context": "'Slothqueer' — a radqueer-adjacent identity label. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🚫🥤"
     ],
-    "context": "Nemaguaqueer"
+    "context": "'Nemaguaqueer' — a radqueer-adjacent identity label. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "⭕️🌈"
     ],
-    "context": "Radjectum"
+    "context": "'Radjectum' — a radqueer-adjacent identity label. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🤍🗝️"
     ],
-    "context": "Pro-consent, note that this is an emoji dog whistle, so the context in which consent is supported is probably irregular."
+    "context": "'Pro-consent' marker used within radqueer circles. The intended meaning is broader than everyday consent advocacy — it is typically used to argue that taboo or harmful relationships are acceptable if 'consented to', which can include situations where valid consent is impossible. Treat as a community-membership signal rather than an innocent statement about consent."
   },
   {
     "match": [
       "😵🩶"
     ],
-    "context": "Necrsensual consent"
+    "context": "'Necrosensual consent' — a radqueer-adjacent label describing claimed consent in the context of necrophilia. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🔄🩹"
     ],
-    "context": "transharmed"
+    "context": "'Transharmed' — a radqueer-adjacent identity label in which a person claims to 'identify as' being harmed, injured, or disabled, often romanticizing self-harm. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
-      "🪼☁️"
+      "🪼☁️",
+      "⋈",
+      "|⋈|",
+      ">⋈⧖<"
     ],
-    "context": "transage"
+    "context": "'Transage' — a radqueer-adjacent identity label in which a person claims to be a different age than their biological age, including identifying as a minor. Used as a self-identification marker in bios and display names; can be used to blur accountability in age-inappropriate interactions."
   },
   {
     "match": [
-      "🩸📍"
+      "🩸📍",
+      "🌡️🩸",
+      "📍🥊",
+      "🎭📌"
     ],
-    "context": "permapain"
+    "context": "'Permapain' — a radqueer-adjacent identity label in which a person claims to 'identify as' permanently injured or in chronic pain, often alongside self-harm content. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🎶💙"
     ],
-    "context": "miku fickin"
+    "context": "'Miku fickin' — identifies as a fictional-kin of Hatsune Miku. Generally a harmless fictionkin label on its own; relevant mainly as an indicator of adjacent community spaces."
   },
   {
     "match": [
       "🍋💦"
     ],
-    "context": "piss kink"
+    "context": "Marker for a urine kink ('piss kink'). Between consenting adults this is not itself a policy violation, but the emoji set is used here because it frequently co-occurs with the other radqueer markers in this dataset."
   },
   {
     "match": [
-      "💧☂️"
+      "💧☂️",
+      "⛲🌞",
+      "🌊✨"
     ],
-    "context": "dacryphilia"
+    "context": "Marker for dacryphilia — sexual arousal from tears or crying. Between consenting adults this is not itself a policy violation, but it frequently co-occurs with the other radqueer markers in this dataset."
   },
   {
     "match": [
       "🍮🍓"
     ],
-    "context": "subliminal user"
+    "context": "'Subliminal user' — signals that the user consumes or creates 'subliminal' audio/video content claimed to change identity traits. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🎶🌙"
     ],
-    "context": "ug sub user"
+    "context": "'UG sub user' — user of 'underground subliminal' content, an unmoderated subliminal community frequently associated with pro-ana and other harmful content. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🦴🌷"
     ],
-    "context": "maishe"
+    "context": "'Maishe' — a radqueer-adjacent identity label. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "Ⰱ"
     ],
-    "context": "unhealthy para"
+    "context": "Glagolitic letter used as a marker for an 'unhealthy paraphilia' — a paraphilic attraction the user themselves labels harmful or disordered. Discreet self-identification symbol; the character has legitimate uses in historical and linguistic contexts, so flag only when used as a bio marker."
   },
   {
     "match": [
       "⎇"
     ],
-    "context": "Alterhuman"
+    "context": "The 'alt key' symbol, used as the marker for the 'alterhuman' community — people who identify as non-human or other-than-human. Broad and mostly benign on its own; relevant as an indicator of adjacent identity communities where the more serious markers in this dataset circulate."
   },
   {
     "match": [
       "≗"
     ],
-    "context": "egosyntonic para"
+    "context": "Used to mark an 'egosyntonic paraphilia' — a paraphilic attraction the user considers acceptable and in line with their self-image, i.e. one they embrace rather than wish to change. Discreet self-identification symbol in bios and display names."
   },
   {
     "match": [
       "θη"
     ],
-    "context": "Trauma(tized) paraphile, the paraphilia is trauma induced."
+    "context": "Greek-letter abbreviation marking a 'traumagenic paraphile' — someone whose paraphilic attraction is, by their own account, the result of trauma. Used as a self-identification marker in bios and usernames; the sequence is otherwise uncommon."
   },
   {
     "match": [
       "💭🧿"
     ],
-    "context": "Fantapara, paraphilic attraction to the imagined."
+    "context": "'Fantapara' — a paraphilic attraction experienced only toward imagined scenarios or fictional characters, as opposed to real people. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
-      "🥄⚙️"
+      "🥄⚙️",
+      "⚙️💕"
     ],
-    "context": "Auto-paraphilia, attraction to oneself in a paraphilic scenario."
+    "context": "'Auto-paraphilia' — arousal from imagining oneself in a paraphilic scenario. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🍳⚙️"
     ],
-    "context": "Pan Auto-Paraphilia, attraction to oneself in all scenarios."
+    "context": "'Pan auto-paraphilia' — arousal from imagining oneself in paraphilic scenarios of all kinds. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
@@ -224,7 +236,7 @@
       "🌟⏲️",
       "🎀🍦"
     ],
-    "context": "Minor Attracted Minor/Minor MAP, a minor that is attracted to other minors."
+    "context": "Markers for a 'Minor Attracted Minor' (also 'Minor MAP') — a self-identified minor who reports sexual attraction to other minors. Note the emojis themselves are common cutesy decorations, so they should only be treated as dog whistles when used as deliberate bio/name markers alongside other MAP vocabulary."
   },
   {
     "match": [
@@ -232,7 +244,7 @@
       "🧸🍸",
       "🍧🍸"
     ],
-    "context": "Minor MAP V1 - that is, a Minor Attracted Person who is a minor."
+    "context": "Variant 1 of the 'Minor MAP' marker set — a self-identified minor who identifies as a Minor Attracted Person (MAP, i.e. someone attracted to minors). Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
@@ -240,7 +252,7 @@
       "🧸☀️",
       "🍧☀️"
     ],
-    "context": "Minor MAP V2 - that is, a Minor Attracted Person who is a minor."
+    "context": "Variant 2 of the 'Minor MAP' marker set — a self-identified minor who identifies as a Minor Attracted Person (MAP). Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
@@ -248,73 +260,83 @@
       "🧸🗺️",
       "🍧🗺️"
     ],
-    "context": "Minor MAP V3 - that is, a Minor Attracted Person who is a minor."
+    "context": "Variant 3 of the 'Minor MAP' marker set — a self-identified minor who identifies as a Minor Attracted Person (MAP). Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🗺️💝"
     ],
-    "context": "MAPophilia, people who are attracted to MAPs."
+    "context": "'MAPophilia' — attraction directed at people who identify as MAPs. Used as a self-identification marker in bios and display names; signals proximity to MAP communities even though the attraction is nominally toward adults."
   },
   {
     "match": [
       "🍇🍸"
     ],
-    "context": "Infantophilia, attraction to infants."
+    "context": "Marker for infantophilia — sexual attraction to infants (roughly 0–2 years old). Self-identification marker used in MAP community spaces, bios, and display names. High-severity signal."
   },
   {
     "match": [
       "🍓🍸"
     ],
-    "context": "Nepiophilia, attraction to toddlers and infants."
+    "context": "Marker for nepiophilia — sexual attraction to infants and toddlers. Self-identification marker used in MAP community spaces, bios, and display names. High-severity signal."
   },
   {
     "match": [
       "🍍🍸"
     ],
-    "context": "Pedophilia, attraction to the prepubescent."
+    "context": "Marker for pedophilia — sexual attraction to prepubescent children. Self-identification marker used in MAP community spaces, bios, and display names. High-severity signal."
   },
   {
     "match": [
       "🍒🍸"
     ],
-    "context": "Hebephilia, attraction to the pubescent."
+    "context": "Marker for hebephilia — sexual attraction to children in early puberty (roughly 11–14). Self-identification marker used in MAP community spaces, bios, and display names. High-severity signal."
   },
   {
     "match": [
       "🫒🍸"
     ],
-    "context": "Ephebephilia, attraction to the post-prepubescent."
+    "context": "Marker for ephebephilia — sexual attraction to post-pubescent adolescents (roughly 15–19). Self-identification marker used in MAP community spaces, bios, and display names; note the target group overlaps with legal adult attraction in some jurisdictions, but the marker signals MAP-community membership."
   },
   {
     "match": [
-      "🐰🎀"
+      "🐰🎀",
+      "🍭💥",
+      "🎀🍭",
+      "🛼🫧",
+      "🌸🍭",
+      "🐁🪷",
+      "🍪🎁",
+      "🩰🍓",
+      "🎀🐰"
     ],
-    "context": "It is often used as a dog whistle for lolicons (attracted to a feminine minor). Used in bios (biographies), hashtags and display names."
+    "context": "Dog whistle used by 'lolicons' — people who express sexual attraction to minors with a feminine presentation. Typically appears in bios, display names, and hashtags. The bunny/ribbon pair is also common in innocent aesthetic contexts, so treat it as a signal only in self-identification contexts."
   },
   {
     "match": [
       "1488"
     ],
-    "context": "Nazi white supremacist dogwhistle. The 14 is the white supremacist part and corresponds to the fourteen word slogan \"We must secure the existence of our people and a future for white children,\" spoken by American neo-Nazi David Eden Lane. The rest of the slogan reads: \"because the beauty of the White Aryan woman must not perish from the earth.\"\n\nThe 88 is the Nazi part, it refers to the 8th letter of the alphabet, H. So 88 is HH, which means \"Heil Hitler\"."
+    "context": "Neo-Nazi white supremacist dog whistle. The '14' stands for the 14-word slogan coined by American neo-Nazi David Lane: 'We must secure the existence of our people and a future for white children.' The '88' encodes 'HH' (H is the 8th letter of the alphabet) for 'Heil Hitler.' Note: check context — the same digits can appear in prices, dates, or usernames innocently; the dog whistle reading applies when used as an identity or affiliation signal."
   },
   {
     "match": [
       "1312"
     ],
-    "context": "All Cops Are Bastards, from the acronym ACAB, with the numbers each corresponding to a letter in the alphabet. This is a dogwhistle associated with anti-fascists and anarchists, as well as general police abolitionists."
+    "context": "Numeric encoding of ACAB ('All Cops Are Bastards' — 1/3/1/2 = A/C/A/B). Associated with anti-fascist, anarchist, and police-abolitionist movements. Widely used as an ordinary political slogan; not inherently harmful, but included because it helps moderators understand a user's ideological alignment."
   },
   {
     "match": [
       "💀🍭"
     ],
-    "context": "It is often used as a dog whistle for cronacons (attracted to a non-binary minor). Used in bios (biographies), hashtags and display names."
+    "context": "Dog whistle used by 'cronacons' — people who express sexual attraction to non-binary minors. Typically appears in bios, display names, and hashtags."
   },
   {
     "match": [
-      "🎒🍭"
+      "🎒🍭",
+      "🌹🍭",
+      "🍭🎒"
     ],
-    "context": "It is often used as a dog whistle for kodocons (attracted to a minor). Used in bios (biographies), hashtags and display names."
+    "context": "Dog whistle used by 'kodocons' — people who express sexual attraction to minors (generic). The backpack emoji emphasizes the school-age association. Typically appears in bios, display names, and hashtags."
   },
   {
     "match": [
@@ -322,7 +344,7 @@
       "🔖☀️",
       "🔖🗺️"
     ],
-    "context": "Fictional MAP, Minor Attracted People who are attracted only to fictional minors."
+    "context": "'Fictional MAP' — a Minor Attracted Person who claims their attraction applies only to fictional minors (e.g. drawn or written characters). Used as a self-identification marker in bios and display names; signals MAP-community membership."
   },
   {
     "match": [
@@ -330,161 +352,168 @@
       "💭🍸",
       "💭☀️"
     ],
-    "context": "FantaMAP, Minor Attracted People who are only attracted to minors in their imagination."
+    "context": "'FantaMAP' — a Minor Attracted Person who claims their attraction to minors exists only in their imagination and never toward real children. Used as a self-identification marker in bios and display names; signals MAP-community membership."
   },
   {
     "match": [
       "🗺️💤"
     ],
-    "context": "SomnoMAP, Minor Attracted People who are also somnophiles (sexually aroused by someone being asleep)."
+    "context": "'SomnoMAP' — a Minor Attracted Person who is also a somnophile (aroused by unconscious or sleeping people). Used as a self-identification marker in bios and display names. High-severity signal due to the combination with minor attraction."
   },
   {
     "match": [
       "🍼🥄",
       "✨🧸",
-      "🍎🍑"
+      "🍎🍑",
+      "💞🐾",
+      "✨🥄",
+      "🧸🍎"
     ],
-    "context": "AutoMAP, minors who are Minor Attracted Persons and attracted to themselves or people who are aroused by the thought of being a minor."
+    "context": "'AutoMAP' — used by minors who identify as Minor Attracted Persons and report attraction to themselves, or by people aroused by the idea of being a minor. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🧸🍓"
     ],
-    "context": "Autonepiophilia, Oneself Being a Toddler/Infant Attracted"
+    "context": "'Autonepiophilia' — arousal from imagining oneself as an infant or toddler. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🧸🍍"
     ],
-    "context": "Autopedophilia, Oneself Being Prepubescent Attracted"
+    "context": "'Autopedophilia' — arousal from imagining oneself as a prepubescent child. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🧸🍒"
     ],
-    "context": "Autohebephilia, Oneself Being Pubescent Attracted"
+    "context": "'Autohebephilia' — arousal from imagining oneself as a pubescent child. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🧸🫒"
     ],
-    "context": "Autoephebephilia, Oneself Being Post-Prepubescent Attracted"
+    "context": "'Autoephebephilia' — arousal from imagining oneself as an adolescent. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🧃💤"
     ],
-    "context": "SomnoAAM, an Adult Attracted Minors who are also a somnophiles (sexually aroused by someone being asleep)."
+    "context": "'SomnoAAM' — an Adult Attracted Minor who is also a somnophile (aroused by sleeping/unconscious people). Used as a self-identification marker in bios and display names; self-harm and grooming risk indicators both apply."
   },
   {
     "match": [
       "🌸🥤"
     ],
-    "context": "\"AAM Loli\", an Adult Attracted Minor who is feminine."
+    "context": "'AAM Loli' — a self-identified minor who reports attraction to adults and presents femininely. Used as a self-identification marker in bios and display names. Treat as a potential victimization/grooming risk signal rather than a simple violation."
   },
   {
     "match": [
       "🫐🥤"
     ],
-    "context": "\"AAM Shota\", an Adult Attracted Minor who is masculine."
+    "context": "'AAM Shota' — a self-identified minor who reports attraction to adults and presents masculinely. Used as a self-identification marker in bios and display names. Treat as a potential victimization/grooming risk signal rather than a simple violation."
   },
   {
     "match": [
       "🍀🥤"
     ],
-    "context": "\"AAM Kodo\", an Adult Attracted Minor who is non-binary."
+    "context": "'AAM Kodo' — a self-identified minor who reports attraction to adults and identifies as non-binary. Used as a self-identification marker in bios and display names. Treat as a potential victimization/grooming risk signal rather than a simple violation."
   },
   {
     "match": [
       "🌻🥤"
     ],
-    "context": "\"AAM Nana/Crona\", an Adult Attracted Minor who is androgynous."
+    "context": "'AAM Nana/Crona' — a self-identified minor who reports attraction to adults and identifies as androgynous. Used as a self-identification marker in bios and display names. Treat as a potential victimization/grooming risk signal rather than a simple violation."
   },
   {
     "match": [
       "🧃🥤"
     ],
-    "context": "\"AAM Xip\", an \"Adult Attracted Xeno-Aligned Minor\"."
+    "context": "'AAM Xip' — a self-identified minor who reports attraction to adults and identifies as 'xeno-aligned'. Used as a self-identification marker in bios and display names. Treat as a potential victimization/grooming risk signal rather than a simple violation."
   },
   {
     "match": [
       "⚠️💫"
     ],
-    "context": "This can stand for Adumi (ADUlt + MInor) which is an alternative word for pedophilia."
+    "context": "Marker for 'Adumi' (ADUlt + MInor), a euphemism coined to rebrand adult–minor attraction, i.e. an alternative word for pedophilia designed to evade keyword filters. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🌙 🍺"
     ],
-    "context": "Teleiophilia, attraction to adults."
+    "context": "Marker for teleiophilia — attraction to adults. On its own this is the default for most adults and not harmful; it is included because, combined with the minor-coded emoji system in this dataset, it can signal a user mapping out the attraction taxonomy used by MAP and radqueer communities."
   },
   {
     "match": [
       "👥🌼"
     ],
-    "context": "Autoincestphilia, paraphilic attraction to people related to you being attracted to you."
+    "context": "Marker for 'autoincestphilia' — paraphilic arousal from the fantasy of a relative being attracted to oneself. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🔖🌹",
       "🔖🥀"
     ],
-    "context": "Ficto-Biastophilia, someone who is attracted to fictional rape."
+    "context": "Marker for 'ficto-biastophilia' — attraction to fictional depictions of rape. Used as a self-identification marker in bios and display names; the 'ficto-' qualifier signals it is framed as fantasy-only, but it still indicates comfort with sexual-violence content."
   },
   {
     "match": [
       "🍸🌹"
     ],
-    "context": "Dopephilia, attraction to sexually assaulting a child."
+    "context": "Marker for 'dopephilia' — attraction to sexually assaulting a child. Used as a self-identification marker in bios and display names. Highest-severity signal in this dataset; any use warrants immediate review."
   },
   {
     "match": [
       "💊🌹"
     ],
-    "context": "Narkobiastophilia, attraction to drugging and raping."
+    "context": "Marker for 'narkobiastophilia' — attraction to drugging and raping people. Used as a self-identification marker in bios and display names. High-severity signal indicating comfort with real-world sexual violence."
   },
   {
     "match": [
       "🌹🥩"
     ],
-    "context": "Anthropophagolagnia, attraction to raping and cannibalizing."
+    "context": "Marker for 'anthropophagolagnia' — attraction to raping and cannibalizing people. Used as a self-identification marker in bios and display names. High-severity signal."
   },
   {
     "match": [
       "❣️🧷"
     ],
-    "context": "Masochism, attraction to being hurt."
+    "context": "Marker for masochism — arousal from being hurt. Common among consenting adults and not itself a policy violation; included because it co-occurs with the other markers in this dataset's community."
   },
   {
     "match": [
-      "❣️👁️"
+      "❣️👁️",
+      "𐤑"
     ],
-    "context": "Sadism, attraction to hurting others or others being in pain."
+    "context": "Marker for sadism — arousal from hurting others or from others being in pain. Common among consenting adults and not itself a policy violation; escalate only when paired with non-consensual or minor-related markers in this dataset."
   },
   {
     "match": [
       "🤕❌"
     ],
-    "context": "Antisadism, attraction to 'antis' being in pain. An anti is someone who in some way opposes radqueers."
+    "context": "Marker for 'antisadism' — expressed desire for 'antis' (people who oppose radqueers, often harassment targets) to be in pain or harmed. Used as a self-identification marker; notable as a signal of hostility and potential targeting behavior toward critics."
   },
   {
     "match": [
-      "🤕🍸"
+      "🤕🍸",
+      "🗺️🧸❣️",
+      "🗺️🧸🩸"
     ],
-    "context": "Pedosadism, attraction to underage people being in pain."
+    "context": "Marker for 'pedosadism' — arousal from underage people being in pain. Used as a self-identification marker in bios and display names. High-severity signal."
   },
   {
     "match": [
-      "🪦🗺️"
+      "🪦🗺️",
+      "μ†"
     ],
-    "context": "NecroMAP, a Minor Attracted Person who is a necrophile (sexual attraction or acts involving corpses)."
+    "context": "Marker for 'NecroMAP' — a Minor Attracted Person who is also a necrophile (attraction to corpses). Used as a self-identification marker in bios and display names. High-severity signal."
   },
   {
     "match": [
       "🥩♀️",
       "🥩👧"
     ],
-    "context": "Gynophagia, attraction to cooking and or eating human females."
+    "context": "Marker for 'gynophagia' — arousal from cooking and/or eating human females. Used as a self-identification marker in bios and display names. High-severity signal indicating fantasy content about real-world violence."
   },
   {
     "match": [
@@ -492,31 +521,1697 @@
       "🌱☂️",
       "🪴🌹"
     ],
-    "context": "Botanophilia, attraction to plants."
+    "context": "Marker for 'botanophilia' — attraction to plants. Not itself a policy concern; included mainly as a community indicator and to prevent moderators from misreading it as a more serious marker."
   },
   {
     "match": [
-      "⚙️🐾"
+      "⚙️🐾",
+      "🌺🐇"
     ],
-    "context": "Autozoophilia, attraction to oneself as an animal."
+    "context": "Marker for 'autozoophilia' — arousal from imagining oneself as an animal. Used as a self-identification marker in bios and display names; adjacent to zoophile community spaces."
   },
   {
     "match": [
       "🦠🐱💜"
     ],
-    "context": "FIVphilia, attraction to feline Immunodeficiency virus."
+    "context": "Marker for 'FIVphilia' — attraction to the feline immunodeficiency virus, framed within zoophile-adjacent identity labeling. Used as a self-identification marker in bios and display names."
   },
   {
     "match": [
       "🍼🐾"
     ],
-    "context": "Zoopedophilia, attraction to young animals."
+    "context": "Marker for 'zoopedophilia' — sexual attraction to young animals. Used as a self-identification marker in bios and display names. High-severity signal (animal abuse)."
   },
   {
     "match": [
       "😽🍭"
     ],
-    "context": "Kittoamory, attraction to kittens as a type of zoophilia."
+    "context": "Marker for 'kittoamory' — attraction to kittens, framed as a form of zoophilia. Used as a self-identification marker in bios and display names. High-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "𓃊"
+    ],
+    "context": "'Duoparaphilia' — a paraphilic umbrella marker. Discreet self-identification symbol used in bios and display names; the hieroglyph is rare enough that it has essentially no innocent use."
+  },
+  {
+    "match": [
+      "⚥"
+    ],
+    "context": "'Autoandrogynephilia' — arousal from imagining oneself as androgynous. Self-identification marker used in bios and display names. Note: ⚥ is the male-and-female-sign ligature and appears in legitimate gender/sex contexts; flag only when used as a bio marker."
+  },
+  {
+    "match": [
+      "⚲"
+    ],
+    "context": "'Autoneuterphilia' — arousal from imagining oneself as sexless/neutered. Self-identification marker used in bios and display names; ⚲ is a rare symbol with few innocent uses."
+  },
+  {
+    "match": [
+      "χφ"
+    ],
+    "context": "'Chromatophilia' — in radqueer usage, attraction to colors. Greek-letter pair used as a discreet self-identification marker; the sequence is uncommon in ordinary Greek text but verify context before acting."
+  },
+  {
+    "match": [
+      "𐦴"
+    ],
+    "context": "'Teratophilia' — attraction to monsters, deformity, or the monstrous. Rare Unicode character used as a discreet self-identification marker; essentially no innocent use."
+  },
+  {
+    "match": [
+      "ζ†"
+    ],
+    "context": "'Necrozoo' — combines the zoophile symbol ζ with a dagger, marking someone who is both zoophile and necrophile. High-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "ꙮ"
+    ],
+    "context": "'Gross paraphilia' umbrella marker — self-identified attraction to decay, rot, filth, or scat. Rare Cyrillic multi-ocular O used as a discreet bio marker; essentially no innocent use."
+  },
+  {
+    "match": [
+      "ᛈ"
+    ],
+    "context": "'Pokephilia' — sexual attraction to Pokémon. Runes occasionally appear in neo-Pagan, historic, or aesthetic contexts, so verify the account's other markers before acting."
+  },
+  {
+    "match": [
+      "҂"
+    ],
+    "context": "'Egodystonic paraphiliac' — someone whose paraphilic attraction distresses them or clashes with their self-image. Cyrillic thousands-sign marker; no common innocent use."
+  },
+  {
+    "match": [
+      "Ѧ"
+    ],
+    "context": "Anti-contact stance specifically regarding adult–minor ('Adumi') relationships — the user identifies as a paraphile but claims opposition to acting on minor attraction. Old Cyrillic letter; rare outside these communities. Useful as a confirmation signal that an account self-identifies within MAP spaces."
+  },
+  {
+    "match": [
+      "πΦχ"
+    ],
+    "context": "'Black paraphiliac' — a paraphile community identity label. Mixed-case Greek sequence used as a discreet bio marker; uncommon in ordinary text."
+  },
+  {
+    "match": [
+      "ϴ⨺",
+      "⛤⁷"
+    ],
+    "context": "'Otherkin' — people who identify as non-human. Mostly a benign identity community on its own; included because it co-occurs with the more serious markers in this dataset. The symbols are rare enough to be reliable bio markers."
+  },
+  {
+    "match": [
+      "θΔ"
+    ],
+    "context": "'Therian' — someone who identifies as a non-human animal. Mostly benign on its own, but frequently co-occurs with zoophile-adjacent markers; check the account's other markers before acting."
+  },
+  {
+    "match": [
+      "👁️🗨️"
+    ],
+    "context": "'PARIN' (Paraphilic In Nature) — marker for identities the user defines as paraphilic. Used as a bio/name marker."
+  },
+  {
+    "match": [
+      "🧬☄️",
+      "🧬🌠"
+    ],
+    "context": "'Ecto-Consang' — claims of a past-life or 'ectopic' family relationship used to reframe incest as non-biological. Used as a bio/name marker in consang (incest-community) spaces."
+  },
+  {
+    "match": [
+      "🍐📂"
+    ],
+    "context": "'Paraphile' umbrella marker (folder emoji variant). Used as a discreet self-identification marker in bios and display names."
+  },
+  {
+    "match": [
+      "🌏📄"
+    ],
+    "context": "'MAP' (Minor Attracted Person) umbrella marker — someone self-identifying as attracted to minors. High-severity signal. The many single-emoji MAP codes (🍸, ☀️, 🗺️, 🍃) are too false-positive-prone to include; only this distinctive pair is safe to match."
+  },
+  {
+    "match": [
+      "🤕🐾",
+      "🐕🦺"
+    ],
+    "context": "'Zoosadist' — sexual arousal from animals suffering. High-severity signal (animal abuse); typically used by accounts already flagged by zoophile markers."
+  },
+  {
+    "match": [
+      "🧸🐾",
+      "🐻🐾",
+      "🤎🐾"
+    ],
+    "context": "'Plushozoophilia' — sexual attraction to animal plush toys. Self-identification marker in zoophile-adjacent spaces."
+  },
+  {
+    "match": [
+      "🔖🐾",
+      "🔖🪶"
+    ],
+    "context": "'Fictozoophile' — claims of zoophilic attraction limited to fictional animals. Self-identification marker; still signals zoophile-community membership."
+  },
+  {
+    "match": [
+      "💭🐾",
+      "💭🪶"
+    ],
+    "context": "'FantaZoo' — claims of zoophilic attraction existing only in the imagination. Self-identification marker; still signals zoophile-community membership."
+  },
+  {
+    "match": [
+      "🪳🐾",
+      "🦗🐾",
+      "🐛🐾",
+      "𓆣 ζ",
+      "ζ 𓆣"
+    ],
+    "context": "'Insect zoophilia' — sexual attraction to insects. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🐕🐾",
+      "🐶🐾"
+    ],
+    "context": "'Canine zoophilia' — sexual attraction to dogs. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🐺🐾"
+    ],
+    "context": "'Lupiophilia' — sexual attraction to wolves. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🦝🐾"
+    ],
+    "context": "'Lotorophilia' — sexual attraction to raccoons. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🐈🐾",
+      "🐱🐾"
+    ],
+    "context": "'Feline zoophilia' — sexual attraction to cats. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🕊️🐾"
+    ],
+    "context": "'Bird zoophilia' — sexual attraction to birds. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🐍🐾",
+      "🐊🐾",
+      "🦎🐾"
+    ],
+    "context": "'Reptile zoophilia' — sexual attraction to reptiles. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🌈🐾"
+    ],
+    "context": "'Multispecies zoophilia' — sexual attraction to multiple non-human species. Self-identification marker used in zoophile community spaces. Caution: rainbow+paw combos also occur in innocent LGBTQ+ pet contexts; check surrounding markers before acting."
+  },
+  {
+    "match": [
+      "🦁🐾",
+      "🐾🦁"
+    ],
+    "context": "'Leophilia' — sexual attraction to lions. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🐀🐾",
+      "🐾🐀"
+    ],
+    "context": "'Rattusphilia' — sexual attraction to rats. Self-identification marker used in zoophile community spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "🐾👁️"
+    ],
+    "context": "'Faunaphilia' — general sexual attraction to animals (zoophile umbrella marker). Self-identification marker; check for other zoophile markers before acting since paw emojis are common innocently."
+  },
+  {
+    "match": [
+      "🗺️❣️",
+      "🗺️🩸"
+    ],
+    "context": "'MAPsadist' — a Minor Attracted Person who is also a sadist (arousal from others being in pain). High-severity signal."
+  },
+  {
+    "match": [
+      "🗺️🍼❣️",
+      "🗺️🍼🩸"
+    ],
+    "context": "'Nepiosadism' — arousal from infants/toddlers being in pain. Highest-severity signal in this dataset; any use warrants immediate review."
+  },
+  {
+    "match": [
+      "🗺️🎒❣️",
+      "🗺️🎒🩸"
+    ],
+    "context": "'Hebesadism' — arousal from pubescent children being in pain. High-severity signal."
+  },
+  {
+    "match": [
+      "🗺️🎓❣️",
+      "🗺️🎓🩸"
+    ],
+    "context": "'Ephebosadism' — arousal from post-pubescent adolescents being in pain. High-severity signal."
+  },
+  {
+    "match": [
+      "🌹🌟"
+    ],
+    "context": "'Autodopephilia' — arousal from imagining oneself being raped as a child. High-severity signal; any use warrants immediate review."
+  },
+  {
+    "match": [
+      "🐭🍰"
+    ],
+    "context": "'Lolishonacon' — attraction to both feminine and masculine minors. High-severity signal; the candy/backpack variants of this marker overlap with the kodocon marker, so matches may indicate either."
+  },
+  {
+    "match": [
+      "☠️💚",
+      "🪦🪱"
+    ],
+    "context": "'Necrophilia' — sexual attraction to corpses. Self-identification marker; high-severity signal. The single-emoji necro codes (🧟, ⌛, ⚰️, 🪦) are too false-positive-prone to include."
+  },
+  {
+    "match": [
+      "⚰️💌"
+    ],
+    "context": "'Corpsecon' — identity marker combining necrophilia with a romantic/relationship framing toward the dead. High-severity signal."
+  },
+  {
+    "match": [
+      "🤎🥀"
+    ],
+    "context": "'Autonecrophilia' — arousal from imagining oneself dead. Self-identification marker used in necro-adjacent spaces; overlaps with self-harm risk indicators."
+  },
+  {
+    "match": [
+      "💫⚰️",
+      "💫🧟",
+      "💫⏳",
+      "💭⚰️",
+      "💭🧟",
+      "💭⏳"
+    ],
+    "context": "'Fantanecro' — claims of necrophilic attraction limited to fantasy or imagination. Self-identification marker; still signals necro-community membership."
+  },
+  {
+    "match": [
+      "🫁⚰️",
+      "🫁🪦",
+      "💨⚰️",
+      "💨🪦",
+      "🫁⌛",
+      "🫁🧟",
+      "💨⌛",
+      "💨🧟"
+    ],
+    "context": "'Necrobiophilia' — attraction spanning both the living and the dead. Self-identification marker; high-severity signal."
+  },
+  {
+    "match": [
+      "🧟‍♂️🖤",
+      "🧟‍♀️🖤",
+      "🧟🖤",
+      "🧠☂️"
+    ],
+    "context": "'Kinemortophilia' — sexual attraction to zombies/the living dead. Fiction-adjacent but used as a self-identification marker in necro-adjacent spaces; 🧠☂️ also serves as a general radqueer suffix marker."
+  },
+  {
+    "match": [
+      "🌺💀",
+      "🫘☠️"
+    ],
+    "context": "'Daturanecrophilia' — necrophilia-adjacent marker referencing datura (toxic plant). Self-identification marker in necro-adjacent spaces; high-severity signal."
+  },
+  {
+    "match": [
+      "🩸🦵",
+      "🧑🦽🌹",
+      "🔪🫀"
+    ],
+    "context": "'Acromotophilia' — sexual attraction to amputations/amputees. Self-identification marker; treat with care since disability-adjacent fetishization is the core issue rather than immediate physical danger."
+  },
+  {
+    "match": [
+      "🔪🩸"
+    ],
+    "context": "'Erotophonophilia' — attraction to murder/killing. High-severity signal indicating comfort with real-world violence."
+  },
+  {
+    "match": [
+      "🗡️🩸"
+    ],
+    "context": "'Piquerism' — arousal from piercing or pricking others with sharp objects. High-severity signal indicating comfort with real-world violence."
+  },
+  {
+    "match": [
+      "😘🔪",
+      "✨🪓"
+    ],
+    "context": "'Autoassasinphilia' — arousal from imagining oneself being murdered. Self-identification marker; treat as a self-harm risk indicator as well."
+  },
+  {
+    "match": [
+      "💢🔪"
+    ],
+    "context": "'Misophilia' — attraction to perceived threat groups. Self-identification marker; monitor for targeting or violent rhetoric."
+  },
+  {
+    "match": [
+      "🩸🥩",
+      "🥩☂️",
+      "🥩🖤"
+    ],
+    "context": "'Carnophilia' — attraction to raw meat/flesh, frequently overlapping with cannibalism fantasy content. Self-identification marker in gore-adjacent spaces."
+  },
+  {
+    "match": [
+      "🩻☂️",
+      "🦴🌧️",
+      "💀🖤"
+    ],
+    "context": "'Cartilogenophilia' — attraction to bones and skeletal structures, frequently overlapping with gore content. Self-identification marker in gore-adjacent spaces."
+  },
+  {
+    "match": [
+      "🩸☂️",
+      "💉☂️",
+      "🆎☂️"
+    ],
+    "context": "'Hematophilia' — sexual attraction to blood. Self-identification marker; note that blood emojis are extremely common in innocent contexts, so only the paired-umbrella forms are safe to match and even then require surrounding context."
+  },
+  {
+    "match": [
+      "🩸👃"
+    ],
+    "context": "'Epistaxiophilia' — arousal from nosebleeds. Self-identification marker in blood-adjacent spaces; low standalone severity but a useful community indicator."
+  },
+  {
+    "match": [
+      "🩸🩲"
+    ],
+    "context": "'Menophilia' — sexual attraction to menstruation. Self-identification marker; note 🩸🩲 could occur in ordinary health discussion, so verify bio context first."
+  },
+  {
+    "match": [
+      "🐈🩸",
+      "🦷🩸"
+    ],
+    "context": "'Huntophilia' — arousal from hunting predator/prey dynamics. Self-identification marker in violence-adjacent spaces."
+  },
+  {
+    "match": [
+      "🐭🩸",
+      "🪤🩸"
+    ],
+    "context": "'Autohuntophilia' — arousal from imagining oneself as prey in a hunt. Self-identification marker; overlaps with self-harm risk indicators."
+  },
+  {
+    "match": [
+      "🩸🦝",
+      "🦷☂️",
+      "🦠🐾"
+    ],
+    "context": "'Lyssophilia' — attraction to rabies/rabid animals. Self-identification marker in zoosadist-adjacent spaces; high-severity signal (animal abuse)."
+  },
+  {
+    "match": [
+      "❤️🩷🩶🤍🖤"
+    ],
+    "context": "'Violentsexual' — self-identification with attraction to violence. High-severity signal; the five-heart sequence is distinctive enough to be a reliable marker."
+  },
+  {
+    "match": [
+      "💥🩹"
+    ],
+    "context": "'Molopaphilia' — attraction to battles/fighting. Self-identification marker; low standalone severity but a community indicator."
+  },
+  {
+    "match": [
+      "🩹☂️",
+      "🫠❤️",
+      "❤️‍🩹🥀"
+    ],
+    "context": "'Unaisiphilia' — attraction to discomfort or being uncomfortable. Self-identification marker; overlaps with self-harm risk indicators."
+  },
+  {
+    "match": [
+      "💢📸"
+    ],
+    "context": "'Pornophilicdephilia' — attraction to degrading pornographic content. Self-identification marker in degradation-adjacent spaces."
+  },
+  {
+    "match": [
+      "🗣️💬💔"
+    ],
+    "context": "'Prosvolíphilia' — arousal from insulting or being insulted. Self-identification marker; low standalone severity but a community indicator."
+  },
+  {
+    "match": [
+      "🎭🔪",
+      "🚣☠️"
+    ],
+    "context": "'Paraskavedekatriaphilia' — attraction themed around Friday the 13th / superstition horror. Self-identification marker in horror-adjacent spaces; low standalone severity."
+  },
+  {
+    "match": [
+      "💭🔪",
+      "💭🖤"
+    ],
+    "context": "'Pecattiphilia' — attraction to imagined 'sin' or transgression. Self-identification marker; moderate severity given the violence-adjacent imagery."
+  },
+  {
+    "match": [
+      "🍂🥀"
+    ],
+    "context": "'Raptophilia' — attraction to decay/ruin aesthetics, often overlapping with thanatophilia (attraction to death). Self-identification marker in necro-adjacent spaces."
+  },
+  {
+    "match": [
+      "ͱ",
+      "𝜢"
+    ],
+    "context": "'Hybristophilia' — attraction to criminals and violent offenders. Self-identification marker; moderate-to-high severity as it signals comfort with real-world violence. These letter variants are rare enough to be reliable bio markers."
+  },
+  {
+    "match": [
+      "🌹🔫",
+      "🌹🔪",
+      "🐾💫"
+    ],
+    "context": "'Hybristophilia' — attraction to criminals and violent offenders (emoji variants). Moderate-to-high severity; the rose/weapon pairs are distinctive markers."
+  },
+  {
+    "match": [
+      "🗝️⛓️",
+      "🪞🔗"
+    ],
+    "context": "'Hybristospectrophilia' — attraction to fictional ghosts/undead who are criminals. Self-identification marker in hybristo-adjacent spaces; moderate severity."
+  },
+  {
+    "match": [
+      "🕸🖤",
+      "🧛🕸"
+    ],
+    "context": "'Scelerophilia' — attraction to villains and unsavory characters. Self-identification marker; low standalone severity given the fictional framing, but a community indicator."
+  },
+  {
+    "match": [
+      "🌼☂️",
+      "🌼🖤",
+      "🌼🩱"
+    ],
+    "context": "'Autobiastophilia' — arousal from imagining oneself being raped. Self-identification marker; treat as a self-harm and risk indicator, and note the daisy emojis are common innocently — the paired forms still require surrounding context."
+  },
+  {
+    "match": [
+      "🌹🩸"
+    ],
+    "context": "'Autohybristophilia' — arousal from imagining oneself in a criminal/violent scenario. Self-identification marker; overlaps with self-harm risk indicators."
+  },
+  {
+    "match": [
+      "😮💨"
+    ],
+    "context": "'Asphyxiophilia' — arousal from suffocation/choking. Self-identification marker; treat as a self-harm risk indicator (erotic asphyxiation is physically dangerous) — this emoji sequence also commonly means a sigh, so bio context is required."
+  },
+  {
+    "match": [
+      "📦☂️"
+    ],
+    "context": "'Claustrophilia' — arousal from confined spaces. Self-identification marker; low standalone severity."
+  },
+  {
+    "match": [
+      "🩵🌻"
+    ],
+    "context": "'Dynamophilia' — attraction to dynamite/explosives. Self-identification marker; monitor for violent rhetoric."
+  },
+  {
+    "match": [
+      "🌘🪐",
+      "☀️🛰️",
+      "🔭✨",
+      "🪐☂️"
+    ],
+    "context": "'Astrophilia' — attraction themed around outer space. Low severity on its own; included as a community indicator since the umbrella-suffix ☂️ marks it as part of the radqueer emoji system rather than innocent space enthusiasm."
+  },
+  {
+    "match": [
+      "🌃🪩",
+      "🌆✨",
+      "🌌☂️"
+    ],
+    "context": "'Auroraphilia' — attraction themed around night skies/auroras. Low severity; the ☂️ suffix marks radqueer system membership rather than innocent aesthetic use."
+  },
+  {
+    "match": [
+      "🪽☂️",
+      "🌬️🪶",
+      "✈️🩶",
+      "🌫️🐦⬛"
+    ],
+    "context": "'Aviatophilia' — attraction to planes/flying. Low standalone severity; included as a community indicator."
+  },
+  {
+    "match": [
+      "🦠☂️",
+      "🧫🫶",
+      "🔬🩶"
+    ],
+    "context": "'Bacteriophilia' — attraction to bacteria/germs. Low severity but frequently co-occurs with illness-fetish content; a useful community indicator via the radqueer suffix marks (☂️, 🫶, 🩶)."
+  },
+  {
+    "match": [
+      "📘❤️",
+      "📚☂️",
+      "📕🪙"
+    ],
+    "context": "'Bibliophilia' — in radqueer usage, a paraphilic rather than literary attraction to books. The single-emoji codes (📚, 📖) are far too innocent to match; only these paired forms are safe, and even then require bio context."
+  },
+  {
+    "match": [
+      "❤️🩹➕"
+    ],
+    "context": "'Boethophilia' — attraction to healing/being healed. Low severity; useful as a community indicator."
+  },
+  {
+    "match": [
+      "🙋♂️❤️💁"
+    ],
+    "context": "'Autoadonic' — arousal from imagining oneself with attraction to non-binary people. Self-identification marker in the auto-erotic paraphilia taxonomy."
+  },
+  {
+    "match": [
+      "🙋♀️❤️💁"
+    ],
+    "context": "'Automaedic' — arousal from imagining oneself with attraction to non-binary people (feminine framing). Self-identification marker in the auto-erotic paraphilia taxonomy."
+  },
+  {
+    "match": [
+      "💑",
+      "🧑🤝🧑"
+    ],
+    "context": "'Autoenbian' — arousal from imagining oneself in an enby-with-enby relationship. The couple emojis are extremely common innocently, so require bio/self-identification context before acting."
+  },
+  {
+    "match": [
+      "👩❤️👨",
+      "👫"
+    ],
+    "context": "'Autojulietian' — arousal from imagining oneself as a woman attracted to men. Common innocent emoji pairs; flag only as deliberate bio markers."
+  },
+  {
+    "match": [
+      "👨❤️👨",
+      "👬"
+    ],
+    "context": "'Autovincian' — arousal from imagining oneself as a man attracted to men. Common innocent emoji pairs; flag only as deliberate bio markers."
+  },
+  {
+    "match": [
+      "👩❤️👩",
+      "👭"
+    ],
+    "context": "'Autosophic/Autosapphic' — arousal from imagining oneself as a woman attracted to women. Common innocent emoji pairs; flag only as deliberate bio markers."
+  },
+  {
+    "match": [
+      "🙋♂️❤️🙋♀️"
+    ],
+    "context": "'Autoromeroeroticism' — arousal from imagining oneself as a man attracted to women within the auto-erotic paraphilia taxonomy. Self-identification marker."
+  },
+  {
+    "match": [
+      "💁❤️🙋♂️"
+    ],
+    "context": "'Autotoric' — arousal from imagining oneself (as non-binary) attracted to men. Self-identification marker."
+  },
+  {
+    "match": [
+      "💁❤️🙋♀️"
+    ],
+    "context": "'Autotrixic' — arousal from imagining oneself (as non-binary) attracted to women. Self-identification marker."
+  },
+  {
+    "match": [
+      "🌈🤍"
+    ],
+    "context": "'Autoheteroeroticism' — arousal from imagining oneself being straight. Self-identification marker; the pair is also a common aesthetic, so require bio context."
+  },
+  {
+    "match": [
+      "🌈💖"
+    ],
+    "context": "'Autohomoeroticism' — arousal from imagining oneself being gay. Self-identification marker; the pair is also a common aesthetic, so require bio context."
+  },
+  {
+    "match": [
+      "🌈💜"
+    ],
+    "context": "'Autolesbioeroticism' — arousal from imagining oneself being lesbian. Self-identification marker; the pair is also a common aesthetic, so require bio context."
+  },
+  {
+    "match": [
+      "🏳️⚧️♂️🌼"
+    ],
+    "context": "'Andromimetophilia' — attraction to transgender men. Self-identification marker; low severity on its own but part of the same taxonomy."
+  },
+  {
+    "match": [
+      "🏳️⚧️♀️🌼"
+    ],
+    "context": "'Gynemimetophilia' — attraction to transgender women. Self-identification marker; low severity on its own but part of the same taxonomy."
+  },
+  {
+    "match": [
+      "♂️🔄💙"
+    ],
+    "context": "'Autoandromimetophilia' — arousal from imagining oneself as a transgender man. Self-identification marker."
+  },
+  {
+    "match": [
+      "♀️🔄💖"
+    ],
+    "context": "'Autogynemimetophilia' — arousal from imagining oneself as a transgender woman. Self-identification marker."
+  },
+  {
+    "match": [
+      "🏳️🌈🤝"
+    ],
+    "context": "'Fujiphilia' — identity framing of attraction to gay men/gay relationships (from 'fujoshi'). Self-identification marker; low-to-moderate severity given the fetishization concern."
+  },
+  {
+    "match": [
+      "👨💌"
+    ],
+    "context": "'Alloandrophilia' — attraction to men. Self-identification marker; very low standalone severity, included for taxonomy completeness."
+  },
+  {
+    "match": [
+      "👩💌"
+    ],
+    "context": "'Allogynephilia' — attraction to women. Self-identification marker; very low standalone severity, included for taxonomy completeness."
+  },
+  {
+    "match": [
+      "🫶🌹",
+      "🪺💌",
+      "🫀☂️"
+    ],
+    "context": "'Autophilia' — attraction to oneself. Self-identification marker; low standalone severity."
+  },
+  {
+    "match": [
+      "👏🪄"
+    ],
+    "context": "'Autogratiophilia' — arousal from being praised. Self-identification marker; low standalone severity."
+  },
+  {
+    "match": [
+      "🙌✨"
+    ],
+    "context": "'Gratiophilia' — attraction to praising others. Self-identification marker; low standalone severity; the pair is common innocently, so require bio context."
+  },
+  {
+    "match": [
+      "👑🙇",
+      "👑☀️"
+    ],
+    "context": "'Autohybriphilia' — arousal from imagining oneself being worshipped. Self-identification marker; low standalone severity."
+  },
+  {
+    "match": [
+      "🪽😇"
+    ],
+    "context": "'Autotheophilia' — arousal from imagining oneself as a god. Self-identification marker; low standalone severity."
+  },
+  {
+    "match": [
+      "🫂🌠🤍"
+    ],
+    "context": "'Agender parental love attraction' — attraction to agender people who provide parental love. Low standalone severity; included for taxonomy completeness."
+  },
+  {
+    "match": [
+      "🎻🎶⏳"
+    ],
+    "context": "'Seiráphilia' — attraction to stringed instruments. Low standalone severity; the three-emoji sequence is distinctive enough to be a reliable marker."
+  },
+  {
+    "match": [
+      "🗣️💕💬"
+    ],
+    "context": "'Name attraction' — attraction to people with certain names. Low standalone severity; included for taxonomy completeness."
+  },
+  {
+    "match": [
+      "🌈🍬💞"
+    ],
+    "context": "'Silly attraction' — attraction to perceived silliness. Low standalone severity; included for taxonomy completeness."
+  },
+  {
+    "match": [
+      "🌈🥄",
+      "🌈🧿",
+      "🍳🥄"
+    ],
+    "context": "'Panphilia/Omniphilia' — attraction to everything. Self-identification marker; low standalone severity but a strong radqueer-community indicator given the paraphile base symbols (🥄, 🧿)."
+  },
+  {
+    "match": [
+      "🥄4️🥄",
+      "🧿4️🧿"
+    ],
+    "context": "'Paraphile 4 paraphile' — a paraphile seeking a paraphile partner. Self-identification marker; useful as a community-membership signal."
+  },
+  {
+    "match": [
+      "🤝🥄",
+      "🥄🤝",
+      "🤝🧿",
+      "🧿🤝"
+    ],
+    "context": "'Paraphilia hoarder' — someone collecting many paraphilic identity labels. Self-identification marker; a strong indicator that the account's other markers are identity claims, not accidental emoji use."
+  },
+  {
+    "match": [
+      "🥄❔",
+      "❔🥄",
+      "🥄❓",
+      "❓🥄",
+      "🧿❔",
+      "❔🧿",
+      "🧿❓",
+      "❓🧿"
+    ],
+    "context": "'Questioning paraphilia' — the account is exploring paraphilic identity labels. Moderate-value signal: confirms the account is engaging with the paraphile emoji system even if no specific label is claimed."
+  },
+  {
+    "match": [
+      "⛅💔",
+      "⛅🍐"
+    ],
+    "context": "'Daybreak paraphile' — a paraphile identity variant themed around morning. Low standalone severity; useful mainly as a community-membership signal."
+  },
+  {
+    "match": [
+      "🌃🪱",
+      "🌃🌈",
+      "🌃🍐"
+    ],
+    "context": "'Midnight paraphile' — a paraphile identity variant themed around night. Low standalone severity; useful mainly as a community-membership signal."
+  },
+  {
+    "match": [
+      "🌉🍐"
+    ],
+    "context": "'Dusk paraphile' — a paraphile identity variant. Low standalone severity; useful mainly as a community-membership signal."
+  },
+  {
+    "match": [
+      "🌌🍐"
+    ],
+    "context": "'Twilight paraphile' — a paraphile identity variant. Low standalone severity; useful mainly as a community-membership signal."
+  },
+  {
+    "match": [
+      "🌑🍐"
+    ],
+    "context": "'Eclipse paraphilia' — a paraphile identity variant. Low standalone severity; useful mainly as a community-membership signal."
+  },
+  {
+    "match": [
+      "🧸🖐️"
+    ],
+    "context": "'Malloplushophilia' — attraction to plush toys of a specific material. Self-identification marker in plushophile-adjacent spaces."
+  },
+  {
+    "match": [
+      "🪽🤍",
+      "🪶🖤",
+      "🪁🐦⬛"
+    ],
+    "context": "'Plumaphilia' — attraction to wings/feathers. Self-identification marker in avian-adjacent spaces; low standalone severity."
+  },
+  {
+    "match": [
+      "👁️☂️",
+      "👁️🌧️",
+      "👁️👁️"
+    ],
+    "context": "'Multiommetaphilia' — attraction to multiple eyes/being watched. Self-identification marker; low standalone severity but a distinctive community indicator."
+  },
+  {
+    "match": [
+      "😵💫"
+    ],
+    "context": "'Maniaphilia' — attraction to 'the insane'/madness. Self-identification marker; the pair is also a common dizzy expression, so require bio context."
+  },
+  {
+    "match": [
+      "🔥❤️",
+      "❤️‍🔥☂️"
+    ],
+    "context": "'Pyrophilia' — attraction to fire. Self-identification marker; monitor for arson-adjacent rhetoric."
+  },
+  {
+    "match": [
+      "💙💛💜🤍🖤",
+      "🌤🧦"
+    ],
+    "context": "'Tenophilia' — attraction to thinness/thin people. Self-identification marker; overlaps with eating-disorder communities — treat as a self-harm risk indicator."
+  },
+  {
+    "match": [
+      "🍥🍊"
+    ],
+    "context": "'Tenocon' — attraction to 'teno' (thin-coded) fictional minor characters. High-severity signal due to the minor-attraction component."
+  },
+  {
+    "match": [
+      "🧠🌱"
+    ],
+    "context": "'Vulnerablephile' — attraction to perceived vulnerability. Self-identification marker; moderate-to-high severity as it signals predatory framing. Also used in the same community for the 'Critexclus' stance, so check for other markers."
+  },
+  {
+    "match": [
+      "👩👧",
+      "👩🍼"
+    ],
+    "context": "'Matrolagnia' — attraction to one's own mother. Self-identification marker; the pairs are common in innocent family posts, so require bio/self-identification context before acting."
+  },
+  {
+    "match": [
+      "👨👧",
+      "👨🍼"
+    ],
+    "context": "'Patrolagnia' — attraction to one's own father. Self-identification marker; the pairs are common in innocent family posts, so require bio/self-identification context before acting."
+  },
+  {
+    "match": [
+      "🍂👧",
+      "🍂👩"
+    ],
+    "context": "'Sororilagnia' — attraction to one's own sister. Self-identification marker."
+  },
+  {
+    "match": [
+      "🍂👦",
+      "🍂👨"
+    ],
+    "context": "'Fratrilagnia' — attraction to one's own brother. Self-identification marker."
+  },
+  {
+    "match": [
+      "🪜👩👧",
+      "🪜👩",
+      "🪜👩🍼"
+    ],
+    "context": "'Novercamania' — attraction to one's stepmother. Self-identification marker."
+  },
+  {
+    "match": [
+      "🪜👨👧",
+      "🪜👨",
+      "🪜👨🍼"
+    ],
+    "context": "'Vintricophilia' — attraction to one's stepfather. Self-identification marker."
+  },
+  {
+    "match": [
+      "🍓🌙",
+      "🩰💌"
+    ],
+    "context": "'Siscon' — attraction to one's sister (from 'sister complex'). Self-identification marker in incest-adjacent spaces."
+  },
+  {
+    "match": [
+      "🫐🌙",
+      "🧢💙"
+    ],
+    "context": "'Brocon' — attraction to one's brother (from 'brother complex'). Self-identification marker in incest-adjacent spaces."
+  },
+  {
+    "match": [
+      "🍇🌙",
+      "🌼💛",
+      "🧺🧃",
+      "💏👥"
+    ],
+    "context": "'Sibcon' — attraction to one's sibling (from 'sibling complex'). Self-identification marker in incest-adjacent spaces."
+  },
+  {
+    "match": [
+      "💌🧑‍🧑‍🧒",
+      "🧑‍🧑‍🧒🌳"
+    ],
+    "context": "'Patruelisphilia' — attraction to one's cousin. Self-identification marker; the family emojis are common innocently, so require bio context."
+  },
+  {
+    "match": [
+      "🥄🌈"
+    ],
+    "context": "'Proship paraphile' — a paraphile who also identifies with the pro-ship stance (defending explicit fiction, including content involving minors). Community-membership signal."
+  },
+  {
+    "match": [
+      "🥄🌙"
+    ],
+    "context": "'Comship paraphile' — a paraphile who identifies with the 'comship' (complex shipping) stance, a rebranding of pro-ship. Community-membership signal."
+  },
+  {
+    "match": [
+      "🥄🐶"
+    ],
+    "context": "'Neutralship paraphile' — a paraphile with a neutral stance on shipping discourse. Community-membership signal."
+  },
+  {
+    "match": [
+      "🥄🐜"
+    ],
+    "context": "'Antiship paraphile' — a paraphile who identifies with the anti-ship stance. Community-membership signal; note that antis are frequent harassment targets in these spaces, so this can mark a user in conflict with the rest of the community."
+  },
+  {
+    "match": [
+      "🌱🥄",
+      "💘🗣"
+    ],
+    "context": "'Paraphilia supporter' — a non-paraphile (or unspecified) account expressing support for paraphilic identities, including in many cases attraction to minors or animals. Community-membership signal."
+  },
+  {
+    "match": [
+      "🌊🔱"
+    ],
+    "context": "'Critharmed' — claims to be 'harmed' by critical discussion of radqueer identities. Part of the 'criticalpunk' identity family used to deflect criticism."
+  },
+  {
+    "match": [
+      "🔥🔱"
+    ],
+    "context": "'Critharmful' — claims that criticism is itself harmful, again framing pushback as aggression. Part of the criticalpunk family."
+  },
+  {
+    "match": [
+      "🚩🔱"
+    ],
+    "context": "'Crithateful' — claims that criticism constitutes hatred. Part of the criticalpunk family; useful to recognize because accounts using it often portray moderation action as persecution."
+  },
+  {
+    "match": [
+      "🗡️🔷"
+    ],
+    "context": "'Pseudoharmed' — claims of pseudo-harm within the radqueer harm-claiming taxonomy. Community-membership signal."
+  },
+  {
+    "match": [
+      "🗡️🎃"
+    ],
+    "context": "'Pseudoharmful' — claims of pseudo-harm (variant). Community-membership signal."
+  },
+  {
+    "match": [
+      "🗡️🍷"
+    ],
+    "context": "'Pseudohateful' — claims of pseudo-hate. Community-membership signal."
+  },
+  {
+    "match": [
+      "💣💦",
+      "⚔️💦"
+    ],
+    "context": "'Hypoharmed' — downplayed harm-claiming identity within the radqueer taxonomy. Community-membership signal."
+  },
+  {
+    "match": [
+      "🪽⚔️",
+      "💣🍁",
+      "⚔️🍁"
+    ],
+    "context": "'Hypoharmful' — downplayed harm-claiming identity (variant). Community-membership signal."
+  },
+  {
+    "match": [
+      "💣💉",
+      "⚔️💉"
+    ],
+    "context": "'Hypohateful' — downplayed hate-claiming identity. Community-membership signal."
+  },
+  {
+    "match": [
+      "🌈🌅"
+    ],
+    "context": "'Radeviant' — a radqueer identity label signaling self-identified 'deviance'. Community-membership signal."
+  },
+  {
+    "match": [
+      "💟🤝",
+      "🌟🤗"
+    ],
+    "context": "'Extreme inclusionist' — an identity stance claiming no identity or attraction should ever be excluded or judged, used within these communities to legitimize the more severe markers in this dataset."
+  },
+  {
+    "match": [
+      "🩹⚡",
+      "⚕🧷"
+    ],
+    "context": "'Illpunk / 111punk' — an identity aesthetic built around illness, self-diagnosis, and anti-recovery framing. Overlaps with self-harm risk indicators."
+  },
+  {
+    "match": [
+      "ξ√",
+      "ξ⎷"
+    ],
+    "context": "'Xenoradicalism / Xenoradism' — an extreme radqueer stance. Community-membership signal; the letter-combo forms are distinctive enough to be reliable bio markers."
+  },
+  {
+    "match": [
+      "🤡‼️",
+      "🤡💥",
+      "🌼💀🌺"
+    ],
+    "context": "'Trollpunk' — an identity aesthetic signaling intentional shock/offense posting. Community-membership signal; accounts using it frequently deploy the serious markers in this dataset 'ironically', which still merits review."
+  },
+  {
+    "match": [
+      "💎🌀",
+      "🧩🌟"
+    ],
+    "context": "'Intiripunk' — a radqueer subculture identity marker. Community-membership signal."
+  },
+  {
+    "match": [
+      "🧷🗯️"
+    ],
+    "context": "'Inclupunk' — a radqueer 'inclusionist punk' identity marker. Community-membership signal."
+  },
+  {
+    "match": [
+      "🎉🖕",
+      "🥳🔪"
+    ],
+    "context": "'Birthpunk / Birthfuck' — a radqueer subculture marker built around shock aesthetics. Community-membership signal; the 🥳🔪 pair warrants review given the violent imagery."
+  },
+  {
+    "match": [
+      "🌟💭"
+    ],
+    "context": "'Critexclus' — an identity stance about who is 'excluded' by critical discourse. Low standalone severity; community-membership signal."
+  },
+  {
+    "match": [
+      "🌻🧡",
+      "🌊🌿"
+    ],
+    "context": "'Redemptionpunk' — a radqueer subculture identity marker framed around 'redemption'. Community-membership signal."
+  },
+  {
+    "match": [
+      "🏥♿",
+      "💉🧠"
+    ],
+    "context": "'Medpunk' — an identity aesthetic built around medical themes. Overlaps with transabled/illness-fetish markers; moderate severity given romanticization of disability and medical harm."
+  },
+  {
+    "match": [
+      "🥄🪦",
+      "🪦🥄"
+    ],
+    "context": "'Parapunk V1' — a subculture identity pairing the paraphile marker (🥄) with death imagery (🪦). Community-membership signal."
+  },
+  {
+    "match": [
+      "🧿🪦",
+      "🪦🧿"
+    ],
+    "context": "'Parapunk V2' — variant of the Parapunk paraphile-community subculture marker. Community-membership signal."
+  },
+  {
+    "match": [
+      "🐦⬛💢"
+    ],
+    "context": "'Oppressionpunk' — an identity claiming oppression status within the radqueer taxonomy. Community-membership signal."
+  },
+  {
+    "match": [
+      "📣❤️"
+    ],
+    "context": "'Amoropunk' — a radqueer subculture identity marker. Community-membership signal."
+  },
+  {
+    "match": [
+      "🌟🚀",
+      "🌈⚙️"
+    ],
+    "context": "'Transpunk' — a radqueer subculture identity marker tied to transidentity (not transgender) communities. Community-membership signal."
+  },
+  {
+    "match": [
+      "➕💣🪦"
+    ],
+    "context": "'TransGenic-Punk' — a radqueer subculture marker combining transidentity (➕), violent (💣), and death (🪦) imagery. Community-membership signal; review given the violent imagery."
+  },
+  {
+    "match": [
+      "💻❌💙"
+    ],
+    "context": "'Glitchtransboy' — a transidentity label claiming to be a boy through a 'glitch' framing. Low standalone severity; community-membership signal."
+  },
+  {
+    "match": [
+      "💻❌💗"
+    ],
+    "context": "'Glitchtransgirl' — a transidentity label claiming to be a girl through a 'glitch' framing. Low standalone severity; community-membership signal."
+  },
+  {
+    "match": [
+      "💻❌💜"
+    ],
+    "context": "'Glitchtransgender' — a transidentity label using 'glitch' framing. Low standalone severity; community-membership signal."
+  },
+  {
+    "match": [
+      "🕰️⏰",
+      "🥣⏰"
+    ],
+    "context": "'Transian' — a transage-adjacent label combining identity markers with the age/time symbol ⏰. Moderate severity: transage claims are used to blur accountability in age-inappropriate interactions."
+  },
+  {
+    "match": [
+      "⏰️3️⃣"
+    ],
+    "context": "'Triage' — a transage variant claiming an age of three. Moderate-to-high severity: an adult claiming to be a toddler is a significant risk signal."
+  },
+  {
+    "match": [
+      "🦠⏪⌛"
+    ],
+    "context": "'Pandemage' — a transidentity marker combining disease and regression/time imagery. Overlaps with illness-fetish markers; moderate severity."
+  },
+  {
+    "match": [
+      "🇲🇽💯➕"
+    ],
+    "context": "'Hypermexican' — a 'transnationality/xenoracial' identity claim. Low standalone severity; included for completeness of the transID marker system."
+  },
+  {
+    "match": [
+      "☄️🌐",
+      "☄️☁️"
+    ],
+    "context": "'Xenoracial' — claims of identifying as another race. Moderate severity: these claims are typically considered racist trolling or a cover for race-fetish content."
+  },
+  {
+    "match": [
+      "🖌️🧳",
+      "🖌️💱"
+    ],
+    "context": "'Xenonationality' — claims of identifying as another nationality. Low-to-moderate severity; community-membership signal."
+  },
+  {
+    "match": [
+      "☄️🥂",
+      "🖌️🏮"
+    ],
+    "context": "'Xenoculture' — claims of identifying as another culture. Low-to-moderate severity; community-membership signal."
+  },
+  {
+    "match": [
+      "🔰🌼",
+      "♿️💝",
+      "🌸💕"
+    ],
+    "context": "'Transneuaju' — a transidentity label. Low standalone severity; community-membership signal."
+  },
+  {
+    "match": [
+      "📼🦋"
+    ],
+    "context": "'TranssymptADHD' — claims of identifying as having ADHD symptoms. Low standalone severity on its own; part of the 'transabled' family that romanticizes disability."
+  },
+  {
+    "match": [
+      "⚡️🦋",
+      "⚡️📼"
+    ],
+    "context": "'Transhyperfixation' — claims of identifying as having hyperfixation. Low standalone severity; part of the transabled family."
+  },
+  {
+    "match": [
+      "💺🎈"
+    ],
+    "context": "'Transquadri(plegic)' — claims of identifying as quadriplegic. Moderate severity: romanticizes significant disability; part of the transabled family."
+  },
+  {
+    "match": [
+      "🎀💎🧬"
+    ],
+    "context": "'Transtritanopia' — claims of identifying as having tritanopia (color blindness). Low severity; part of the transabled family."
+  },
+  {
+    "match": [
+      "💤⭐️"
+    ],
+    "context": "'Transnarcolepsy' — claims of identifying as having narcolepsy. Low severity; part of the transabled family."
+  },
+  {
+    "match": [
+      "🔁🕖"
+    ],
+    "context": "'Transyear' — claims of identifying as being from another year. Low standalone severity; community-membership signal."
+  },
+  {
+    "match": [
+      "🗣️💬📊",
+      "🗣️💬💙",
+      "🗣️💬🖤",
+      "🗣️💬💛",
+      "🗣️💬🤍",
+      "🗣️💬🧡"
+    ],
+    "context": "'Transtone' variants — claims of identifying as speaking in a specific emotional 'tone'. Low standalone severity; included as transID-system markers. The 🗣️💬 prefix family is distinctive enough to be reliable."
+  },
+  {
+    "match": [
+      "🔁🔊",
+      "🔁💬",
+      "🔁📱🔊"
+    ],
+    "context": "'Transvoice / Altvoice / TransAAC' — claims of identifying as having a different voice, or as an AAC (speech device) user. Low-to-moderate severity: the AAC claim in particular romanticizes disability."
+  },
+  {
+    "match": [
+      "🔁🏳🔊",
+      "🏳💬",
+      "🔁🇷🇺🔊",
+      "🇷🇺💬",
+      "🔁🇬🇧🔊",
+      "🇬🇧💬",
+      "🔁☎️🔊",
+      "☎️💬",
+      "🔁📻🔊",
+      "📻💬",
+      "🔁📼🔊",
+      "📼💬",
+      "🔁🐶🔊",
+      "🐶💬",
+      "🔁❤️🔥🔊",
+      "❤️🔥💬",
+      "🔁🪽🔊",
+      "🪽💬",
+      "🔁♾️🔊",
+      "♾️💬",
+      "🔢🏳〰️🔊",
+      "🔢〰️💬"
+    ],
+    "context": "'Transaccent / Polyaccent' family — claims of identifying as speaking with a different accent, including racial/national accents (Russian, British), animal 'barks', or object 'voices'. Moderate severity: the accent claims overlap with racist caricature, and the family as a whole is a reliable transID-system indicator."
+  },
+  {
+    "match": [
+      "📝🌀",
+      "💬📝➕"
+    ],
+    "context": "'Translingual' — claims of identifying as speaking another language. Low-to-moderate severity; community-membership signal."
+  },
+  {
+    "match": [
+      "🦇👤",
+      "🦷🦇",
+      "🌱👤",
+      "🦎👤",
+      "🐊🦕",
+      "🌵👤",
+      "🖐️👤",
+      "🐾🐓",
+      "🍂👤",
+      "😈👤",
+      "🦄🦏",
+      "🍁👤",
+      "🕊️👤",
+      "🐦🦇",
+      "🍃👤",
+      "🐾👤",
+      "🐶🐱",
+      "🌳👤",
+      "🍚🥡"
+    ],
+    "context": "'Bodic' family — transspecies claims about one's body being animal- or object-based (bat teeth, lizard skin, paws, wings, fried-rice body, etc.). Low standalone severity on its own; the 👤-suffixed forms are reliable transspecies markers, and the family co-occurs with the zoophile markers in this dataset, so check other markers before acting."
+  },
+  {
+    "match": [
+      "🔁💗👁️"
+    ],
+    "context": "'Transloverpupils' — claims of identifying as having 'lover-shaped' pupils. Low severity; a distinctive transID-system marker."
+  },
+  {
+    "match": [
+      "👁️🌈🧩",
+      "👁️❤️🧩",
+      "👁️🧡🧩",
+      "👁️💛🧩",
+      "👁️💚🧩",
+      "👁️💙🧩",
+      "👁️💜🧩",
+      "👁️🤍🧩",
+      "👁️🖤🧩",
+      "👁️🤎🧩"
+    ],
+    "context": "'Transcoloreyes' — claims of identifying as having differently-colored eyes. Low severity on its own; the 🧩 (puzzle-piece) suffix marks it as a transID marker rather than ordinary eye-color discussion."
+  },
+  {
+    "match": [
+      "💛💜🤍"
+    ],
+    "context": "'Transintersex' — claims of identifying as intersex. Moderate severity: romanticizes a congenital condition. Caution: 💛💜🤍 is also the intersex pride flag order-adjacent and appears innocently in intersex advocacy, so require other transID markers before acting."
+  },
+  {
+    "match": [
+      "🔁🦎👅",
+      "🔁🐶👅",
+      "🔁🐱👅",
+      "🔁🐦👅"
+    ],
+    "context": "'Transtongue' family — claims of identifying as having an animal tongue (lizard, dog, cat, bird). Low severity alone; the 🔁 prefix marks the transID system."
+  },
+  {
+    "match": [
+      "🕯️🍃",
+      "🕯️🌊",
+      "🕯️🍦🥧",
+      "🥧🍦🍃",
+      "🕯️💐",
+      "💐🍃",
+      "🕯️💩",
+      "💩🍃",
+      "🕯️🍭☁️",
+      "🍭☁️🍃",
+      "🕯️🧁",
+      "🧁🍃",
+      "🕯️🍬",
+      "🍬🍃",
+      "🕯️🍮",
+      "🍮🍃",
+      "🕯️🍁",
+      "🍁🍃",
+      "🕯️🍯",
+      "🍯🍃",
+      "🕯️🍋🍯",
+      "🍯🍋🍃",
+      "🕯️🥞",
+      "🥞🍃",
+      "🕯️🎂",
+      "🎂🍃",
+      "🕯️🎤",
+      "🎤🍃"
+    ],
+    "context": "'Transscent / Scentian' family — claims of identifying as having a different scent, with the paired 🍃 forms marking 'identity' variants (cotton candy, vanilla, honey, cake, etc.). Low severity on its own; note these use very common food emojis, so treat as markers only in bio/name contexts alongside other transID markers."
+  },
+  {
+    "match": [
+      "♟️🔄"
+    ],
+    "context": "'Transclub' — a transidentity marker. Low severity; community-membership signal."
+  },
+  {
+    "match": [
+      "💚🩷⚰️🌎"
+    ],
+    "context": "'TCOAALixure' — an identity marker referencing The Coffin of Andy and Leyley, a game popular in these communities for its incest/cannibalism themes. Moderate severity: signals comfort with incest and cannibalism content; the four-emoji sequence is distinctive."
+  },
+  {
+    "match": [
+      "🔄✨"
+    ],
+    "context": "'Transcure' — a transidentity marker. Low severity; community-membership signal."
+  },
+  {
+    "match": [
+      "🥇⭐️",
+      "🥈⭐️",
+      "🥉⭐️",
+      "🟩⭐️"
+    ],
+    "context": "'(Trans)Permaplace' family — claims of permanently identifying as first/second/third place or 'participation'. Absurdist transID markers; low severity, useful only as confirmation of transID-system engagement."
+  },
+  {
+    "match": [
+      "💤🛏🌙",
+      "💤🛏☀️"
+    ],
+    "context": "'Transdiurnal / Transnocturnal' — claims of identifying as day-active or night-active. Low severity; community-membership signal."
+  },
+  {
+    "match": [
+      "⬆️⚧️",
+      "⬇️⚧️",
+      "🔆✖️",
+      "🪻✖️",
+      "💛✖️",
+      "💜✖️",
+      "🩵➕",
+      "🫐➕",
+      "🩷➖",
+      "🍬➖"
+    ],
+    "context": "Transdysphoria / Sevigenderdysphoria family — markers claiming different amounts of gender dysphoria, including claims of dysphoria about being transgender. Low severity on its own; transID-system markers."
+  },
+  {
+    "match": [
+      "🦇🪦",
+      "💕💐💫",
+      "🌀💐💫",
+      "🩸💐💫"
+    ],
+    "context": "'Transvampire' family — claims of identifying as a vampire, with eros/psi/sanguine variants. Low severity; fiction-adjacent transID markers."
+  },
+  {
+    "match": [
+      "∅🦇",
+      "🅾️➕🦇",
+      "🅾️➕",
+      "🅾️➖🦇",
+      "🅾️➖",
+      "🅰️➕🦇",
+      "🅰️➕",
+      "🅰️➖🦇",
+      "🅰️➖",
+      "🅱️➕🦇",
+      "🅱️➕",
+      "🅱️➖🦇",
+      "🅱️➖",
+      "🆎➕🦇",
+      "🆎➕",
+      "🆎➖🦇",
+      "🆎➖"
+    ],
+    "context": "'Transblood-type' family — claims of identifying as having a different blood type, with 🦇 distinguishing the transID marker from ordinary blood-type discussion. Low severity; the plain 🅾️➕-style forms are extremely common in innocent contexts and should only be flagged alongside other transID markers."
+  },
+  {
+    "match": [
+      "🖤⚰️",
+      "💕⚰️",
+      "🔢⚰️",
+      "☢️⚰️",
+      "🌊⚰️",
+      "☣️⚰️",
+      "✝️⚰️",
+      "🪱⚰️",
+      "💦⚰️",
+      "💉⚰️",
+      "🪢⚰️",
+      "🦇⚰️",
+      "🪨⚰️",
+      "🔪⚰️",
+      "💙⚰️",
+      "☄️⚰️"
+    ],
+    "context": "'Transdeath' family — claims of identifying as dead/dying, with the prefix emoji naming the claimed death method (hanging, drowning, injection, rabies, stoning, etc.). Moderate-to-high severity: overlaps with self-harm risk indicators and, in some variants, with violent fantasy content. The ⚰️ suffix family is distinctive enough to be reliable bio markers."
+  },
+  {
+    "match": [
+      "🧪🕒"
+    ],
+    "context": "'Transradiumpoisoning' — claims of identifying as having radiation poisoning. Low severity; part of the transabled family."
+  },
+  {
+    "match": [
+      "🦠☢️"
+    ],
+    "context": "'Transexperiment' — claims of identifying as having been experimented on. Low severity; part of the transabled family, though the imagery warrants a check for violent content."
+  },
+  {
+    "match": [
+      "🦾🌈"
+    ],
+    "context": "'Transprosthetic' — claims of identifying as having/being a prosthetic. Low severity; part of the transabled family."
+  },
+  {
+    "match": [
+      "♾️💢"
+    ],
+    "context": "'Permabruise' — claims of permanently identifying as bruised. Overlaps with self-harm risk indicators; moderate severity."
+  },
+  {
+    "match": [
+      "🌑🛏",
+      "🌑❤️",
+      "🌑🍷",
+      "🌑🎰",
+      "🌑💻",
+      "🌑🎮",
+      "🌑☕️",
+      "🌑🚬",
+      "🌑🌬",
+      "🌑💊",
+      "🌑🍃",
+      "🌑😮💨",
+      "🌑❄️",
+      "🌑🍬",
+      "🌑🍫",
+      "🌑🕳️",
+      "🌑🐉",
+      "🌑🔮",
+      "🌑🍞",
+      "🌑🍭",
+      "🌑🌭",
+      "🌑🧂",
+      "🌑🍄",
+      "🌑💫"
+    ],
+    "context": "'Trans-/Di-addiction' family — claims of identifying as having an addiction (alcohol, gambling, nicotine, cocaine, heroin, meth, food, etc.) via the 🌑 prefix. Low-to-moderate severity on its own; the drug-specific variants romanticize substance abuse and overlap with pro-drug communities. The 🌑 prefix family is distinctive enough to be reliable markers."
+  },
+  {
+    "match": [
+      "💥👻"
+    ],
+    "context": "'Ghostpower' — a transidentity 'power' claim. Low severity; community-membership signal."
+  },
+  {
+    "match": [
+      "💥🧿",
+      "💥🐈⬛"
+    ],
+    "context": "'Transbadluckpower' — a transidentity 'power' claim about bad luck. Low severity; community-membership signal."
+  },
+  {
+    "match": [
+      "🌑🕯️🪽"
+    ],
+    "context": "'(Trans)Soulscovern' — a transidentity marker combining moon, candle, and wing imagery. Low severity; community-membership signal."
+  },
+  {
+    "match": [
+      "⚡♈",
+      "⚡♉",
+      "⚡♊",
+      "⚡♋",
+      "⚡♌",
+      "⚡♍",
+      "⚡♎",
+      "⚡♏",
+      "⚡♐",
+      "⚡♑",
+      "⚡♒",
+      "⚡♓",
+      "⚡⛎"
+    ],
+    "context": "'Transzodiac / Diazodia' family — claims of identifying as a different zodiac sign, one per sign (including Ophiuchus). Very low severity on its own; included as a reliable transID-system indicator since the ⚡+zodiac pairs have no ordinary use."
+  },
+  {
+    "match": [
+      "🪻🌎",
+      "🪷🌎",
+      "🌱🪷🌎"
+    ],
+    "context": "'Transpeaceful / Transharmless / Transgreenthumb' — transidentity claims framed as being peaceful or harmless. Low severity; community-membership signal, useful as a mitigating context cue."
+  },
+  {
+    "match": [
+      "💉💢"
+    ],
+    "context": "'TransAntiVax' — claims of identifying as anti-vaccination. Low severity on its own; community-membership signal with medical-misinformation adjacency."
+  },
+  {
+    "match": [
+      "🔃🔗"
+    ],
+    "context": "'Transcriminal' — claims of identifying as a criminal. Moderate severity; monitor for threats or glorification of offenses."
+  },
+  {
+    "match": [
+      "🔃🔪",
+      "🔃🗡",
+      "🔃🔫"
+    ],
+    "context": "'Transkiller / Transmurderer' — claims of identifying as a murderer. High-severity signal: even framed as 'identity', review for threats and violent ideation."
+  },
+  {
+    "match": [
+      "💜ϟϟ",
+      "💜🍞",
+      "🚩⛸"
+    ],
+    "context": "'Transnazi' — claims of identifying as a Nazi (bread references 'brown', from Nazi uniform color; ϟϟ mirrors SS runes). High-severity signal combining transID framing with Nazi self-identification; review immediately."
+  },
+  {
+    "match": [
+      "💙ϟϟ",
+      "💙🍞",
+      "🚩🌫"
+    ],
+    "context": "'Transneonazi' — claims of identifying as a neo-Nazi. High-severity signal; review immediately."
+  },
+  {
+    "match": [
+      "🌈☂️",
+      "🌈🍥",
+      "🌈🔁"
+    ],
+    "context": "'Transeverything / TranspanID' — claims of identifying as every transidentity at once. Low-to-moderate severity; a strong indicator of deep engagement with the transID system, so treat the account's other markers seriously."
+  },
+  {
+    "match": [
+      "🛡️🖇️"
+    ],
+    "context": "'TransDIDOSDD' — claims of identifying as having dissociative identity disorder/OSDD. Moderate severity: romanticizes a trauma disorder; overlaps with syscourse and faker communities."
+  },
+  {
+    "match": [
+      "☂️❔",
+      "🍥❔",
+      "🔁❔",
+      "☂️❓",
+      "🍥❓",
+      "🔁❓"
+    ],
+    "context": "'Questioning TransID' — the account is exploring transidentity labels. Low standalone severity; confirms engagement with the transID marker system (the ☂️/🍥/🔁 prefixes are the transID umbrella symbols)."
+  },
+  {
+    "match": [
+      "☂️🤝",
+      "🍥🤝",
+      "🔁🤝"
+    ],
+    "context": "'TransID hoarder' — an account collecting many transidentity labels. Low-to-moderate severity; useful as a weighting signal that the account's other markers are deliberate identity claims."
+  },
+  {
+    "match": [
+      "🦠5️⃣🐱"
+    ],
+    "context": "'TransFIV' — claims of identifying as having feline immunodeficiency virus. Moderate severity: overlaps with the zoophile-adjacent FIVphilia marker in this dataset; check the account for other zoophile markers."
   }
 ]
 `;
