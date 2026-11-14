@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Duolingo Path Viewer + Forecast
 // @namespace    https://github.com/duolingo-path-viewer
-// @version      2.1.0
+// @version      2.1.1
 // @description  Full path preview, forecast, planning, milestones, export, theme.
 // @match        https://www.duolingo.com/*
 // @match        https://*.duolingo.com/*
@@ -390,11 +390,11 @@
       .fc-table td { padding: 8px; border-bottom: 1px solid var(--border); }
       .fc-table tr.curr { background: var(--table-alt); }
       .fc-table tr.curr td:first-child::before { content: "▶ "; color: #f0a500; }
-      .fc-spark { display: flex; align-items: flex-end; gap: 2px; height: 50px; padding: 4px 0; }
+      .fc-spark { display: flex; align-items: flex-end; gap: 2px; height: 100px; padding: 4px 0; }
       .fc-spark > div { flex: 1; background: var(--info-fg); border-radius: 2px 2px 0 0; min-height: 1px; }
       .fc-spark-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
       .fc-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
-      .fc-quality { width: 100%; height: 90px; display: block; }
+      .fc-quality { width: 100%; height: 180px; display: block; }
       .fc-dow { display: flex; gap: 4px; height: 160px; padding: 4px 0; }
       .fc-dow .col { flex: 1; display: flex; flex-direction: column; height: 100%; }
       .fc-dow .bar-area { flex: 1; display: flex; align-items: flex-end; width: 100%; }
@@ -632,7 +632,6 @@
                 nextNode = findNextNode(currentData);
                 window.__dlvPath = currentData;
                 
-                // If the plan tab is already rendered, clear it so it can pick up new data
                 if (fcPlanContent.querySelector('.plan-wrap')) {
                     fcPlanContent.innerHTML = '<div class="dlv-status">Data reloaded. Switch tabs or adjust sliders to update the plan.</div>';
                 }
@@ -666,12 +665,12 @@
 
         const renderQuality = (points) => {
             if (!points.length) return '<div class="dlv-status">No data</div>';
-            const W = 600, H = 90;
+            const W = 600, H = 180;
             const max = Math.max(...points.map(p => p.xpPerSession), 1);
             const stepX = W / Math.max(1, points.length - 1);
             const path = points.map((p, i) => {
                 const x = i * stepX;
-                const y = H - 5 - (p.xpPerSession / max) * (H - 15);
+                const y = H - 10 - (p.xpPerSession / max) * (H - 30);
                 return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
             }).join(' ');
             let trend = '';
@@ -683,7 +682,7 @@
                 trend = ` ${arrow} ${first.toFixed(0)} → ${last.toFixed(0)} XP/session`;
             }
             return `<svg class="fc-quality" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
-        <text x="4" y="14" font-size="10" fill="var(--muted)">${max.toFixed(0)} XP/session</text>
+        <text x="4" y="20" font-size="14" fill="var(--muted)">${max.toFixed(0)} XP/session</text>
         <path d="${path}" fill="none" stroke="#1cb0f6" stroke-width="2" vector-effect="non-scaling-stroke"/>
       </svg><div class="fc-note">${trend}</div>`;
       };
@@ -722,6 +721,12 @@
             if (pace.estimated) html += `<div class="fc-note">⚠ Sessions estimated from XP where exact counts weren't available.</div>`;
             if (endpointUsed) html += `<div class="fc-note">Source: ${esc(endpointUsed)}</div>`;
             html += `</div>`;
+
+            // Today's Progress
+            const todayStr = new Date().toISOString().slice(0, 10);
+            const todayRec = summariesCache.find(s => s.date === todayStr);
+            const todaySessions = todayRec ? sessionsOf(todayRec) : 0;
+            html += `<div class="fc-card"><h3>Today</h3><div class="fc-big">${todaySessions % 1 === 0 ? todaySessions : todaySessions.toFixed(1)} sessions</div><div class="fc-meta">completed so far today</div></div>`;
 
             // Time projections
             if (time.avgSecPerSession > 0 && remainingSessions > 0) {
@@ -770,7 +775,7 @@
             fcContent.innerHTML = html;
         };
 
-        // ---------- Plan tab (Overhauled) ----------
+        // ---------- Plan tab ----------
         const renderPlan = () => {
             if (!currentData) { fcPlanContent.innerHTML = '<div class="dlv-error">Load the path first.</div>'; return; }
             if (!summariesCache) { fcPlanContent.innerHTML = '<div class="dlv-status">Load activity history first (Forecast tab).</div>'; return; }
@@ -779,10 +784,9 @@
             const pace = computePace(summariesCache, win);
             const timeData = computeTime(summariesCache, win);
 
-            // Initialize planState.avgMins if null based on actual data
             if (planState.avgMins === null) {
                 const est = timeData.avgSecPerSession > 0 ? timeData.avgSecPerSession / 60 : 2;
-                planState.avgMins = Math.max(1, Math.min(15, Math.round(est * 2) / 2)); // round to nearest 0.5
+                planState.avgMins = Math.max(1, Math.min(15, Math.round(est * 2) / 2));
             }
 
             const update = () => {
@@ -807,7 +811,6 @@
                     return;
                 }
 
-                // Default target date if not set
                 if (!planState.targetDate) {
                     planState.targetDate = forecastDate((remainingTotal * planState.avgMins) / planState.dailyMins);
                 }
@@ -821,7 +824,6 @@
                 const projDays = totalMins / planState.dailyMins;
                 const projDate = forecastDate(projDays);
 
-                // Update labels
                 const avgLabel = fcPlanContent.querySelector('#planAvgLabel');
                 if (avgLabel) avgLabel.textContent = planState.avgMins + ' min';
                 
@@ -834,7 +836,6 @@
                 const projMeta = fcPlanContent.querySelector('#projMeta');
                 if (projMeta) projMeta.innerHTML = `Finishes in <b>${Math.ceil(projDays)} days</b> (${projDate})`;
 
-                // Update table
                 let cumMins = 0;
                 let rowsHtml = '';
                 currentData.forEach(sec => {
