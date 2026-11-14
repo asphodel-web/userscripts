@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Duolingo Path Viewer + Forecast
-// @namespace    https://github.com/asphodel-web/userscripts
-// @version      2.0.1
-// @description  Full path preview, forecast, planning, milestones, export, theme, multi-course.
+// @namespace    https://github.com/duolingo-path-viewer
+// @version      2.1.0
+// @description  Full path preview, forecast, planning, milestones, export, theme.
 // @match        https://www.duolingo.com/*
 // @match        https://*.duolingo.com/*
 // @grant        none
@@ -178,63 +178,19 @@
         if (!t) return null;
         return String(t).startsWith('Bearer ') ? t : 'Bearer ' + t;
     };
-
-    // Patched Course extraction functions
     const getCourseName = (state) => {
-        const u = state?.state?.user || state?.user || {};
-        const cc = u.currentCourse;
+        const cc = state?.state?.user?.currentCourse || state?.user?.currentCourse;
         if (!cc) return 'Duolingo';
         const title = cc.title || cc.learningLanguage || cc.courseId || cc.id;
-        if (!title) return 'Duolingo';
-        return title.charAt(0).toUpperCase() + title.slice(1);
+        return title ? title.charAt(0).toUpperCase() + title.slice(1) : 'Duolingo';
     };
-
-    const findCourses = (state) => {
-        const u = state?.state?.user || state?.user || {};
-        let raw = u.courses || u.learningLanguages || u.courseIds || [];
-
-        // Sometimes it's an object instead of an array
-        if (raw && !Array.isArray(raw) && typeof raw === 'object') {
-            raw = Object.values(raw);
-        }
-        if (!Array.isArray(raw)) raw = [];
-
-        const list = raw.map(c => {
-            if (typeof c === 'string') {
-                return { id: c, title: c.charAt(0).toUpperCase() + c.slice(1), isCurrent: c === u.currentCourse?.id };
-            }
-            const id = c.id || c.courseId;
-            const title = c.title || c.learningLanguage || id || 'Course';
-            return {
-                id,
-                title: title.charAt(0).toUpperCase() + title.slice(1),
-                isCurrent: id === (u.currentCourse?.id || u.currentCourseId)
-            };
-        });
-
-        // Ensure the current course is always in the list, even if the course array was missing
-        if (u.currentCourse && !list.some(c => c.isCurrent)) {
-            const cc = u.currentCourse;
-            const title = cc.title || cc.learningLanguage || cc.courseId || cc.id;
-            if (title) {
-                list.unshift({
-                    id: cc.id,
-                    title: title.charAt(0).toUpperCase() + title.slice(1),
-                    isCurrent: true
-                });
-            }
-        }
-
-        return list;
-    };
-
     const extractAll = async () => {
         const state = await decodeState();
         const pathSectioned = findPathSectioned(state);
         if (!pathSectioned || pathSectioned.length === 0) throw new Error('pathSectioned not found.');
         const token = getAuthToken(state);
         const userId = findUserId(state, token);
-        return { state, pathSectioned, userId, token, courseName: getCourseName(state), courses: findCourses(state) };
+        return { state, pathSectioned, userId, token, courseName: getCourseName(state) };
     };
 
     // ---------- Summaries ----------
@@ -341,21 +297,6 @@
         const labels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
         return totals.map((total, i) => ({ day: labels[i], total, avg: counts[i] ? total / counts[i] : 0 }));
     };
-    const computeMilestones = (sections, currentIdx, pace) => {
-        const out = [];
-        let cum = 0;
-        for (let i = currentIdx; i < sections.length; i++) {
-            cum += sectionRemaining(sections[i]);
-            const cefr = sections[i].cefr?.level || 'UNKNOWN';
-            const nextCefr = sections[i + 1]?.cefr?.level;
-            const isLast = i === sections.length - 1;
-            if (isLast || (nextCefr && nextCefr !== cefr)) {
-                const d = pace > 0 ? cum / pace : Infinity;
-                out.push({ cefr, date: forecastDate(d), days: d, sectionIndex: i });
-            }
-        }
-        return out;
-    };
     const buildForecast = (sections, currentIdx, pace) => {
         const out = [];
         let cum = 0;
@@ -407,8 +348,7 @@
       }
       .dlv-header { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--header-bg); }
       .dlv-header h2 { margin: 0; font-size: 16px; color: var(--fg); white-space: nowrap; }
-      .dlv-header select, .dlv-header button { padding: 7px 12px; border: none; border-radius: 6px; font: 600 13px system-ui; cursor: pointer; background: var(--btn-bg); color: var(--btn-fg); }
-      .dlv-header select { max-width: 180px; cursor: pointer; }
+      .dlv-header button { padding: 7px 12px; border: none; border-radius: 6px; font: 600 13px system-ui; cursor: pointer; background: var(--btn-bg); color: var(--btn-fg); }
       .dlv-header .spacer { flex: 1; }
       .dlv-theme { background: var(--btn-bg); color: var(--btn-fg); font-size: 16px; padding: 6px 10px; }
       .dlv-download { background: #1cb0f6; color: #fff; }
@@ -464,15 +404,20 @@
       .filters input, .filters select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; background: var(--bg); color: var(--fg); }
       .filters input { flex: 1; min-width: 180px; }
       .filters button { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--btn-bg); color: var(--btn-fg); cursor: pointer; font-size: 12px; }
-      .plan-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; }
-      .plan-row > * { flex: 1; min-width: 200px; }
-      .plan-row input, .plan-row select { padding: 8px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); font-size: 14px; width: 100%; box-sizing: border-box; }
-      .plan-row label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
-      .plan-status { padding: 8px 12px; border-radius: 6px; font-weight: 600; margin-top: 8px; }
-      .plan-status.ahead { background: var(--done-bg); color: var(--done-fg); }
-      .plan-status.behind { background: #ffeaea; color: #c00; }
-      .dlv-inner.dark .plan-status.behind { background: #3a1a1a; color: #ff8888; }
-      .plan-status.on-track { background: var(--info-bg); color: var(--info-fg); }
+      
+      .plan-wrap { display: flex; flex-direction: column; gap: 12px; }
+      .plan-metrics { display: flex; gap: 12px; margin-bottom: 12px; }
+      .plan-metric { flex: 1; background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+      .plan-metric .k { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+      .plan-metric .v { font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+      .plan-goals { display: flex; gap: 12px; flex-wrap: wrap; }
+      .goal-group { flex: 1; min-width: 200px; background: var(--card-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border); }
+      .goal-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--fg); }
+      .goal-group input[type=date] { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg); font-family: inherit; }
+      .goal-group input[type=range] { width: 100%; margin: 8px 0; }
+      .goal-meta { font-size: 12px; color: var(--muted); margin-top: 8px; }
+      .goal-meta b { color: var(--fg); }
+
       .export-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
       .export-card { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: var(--card-bg); display: flex; flex-direction: column; gap: 8px; }
       .export-card h3 { margin: 0; font-size: 14px; color: var(--fg); }
@@ -480,11 +425,6 @@
       .export-card button { padding: 8px 14px; border: none; border-radius: 6px; font: 600 13px system-ui; cursor: pointer; background: var(--accent); color: #fff; }
       .export-card button:hover { filter: brightness(0.95); }
       .export-card button:disabled { background: #666; cursor: not-allowed; }
-      .whatif-slider { width: 100%; margin: 8px 0; }
-      .whatif-value { font-size: 24px; font-weight: 700; color: var(--accent); }
-      .dlv-header select:disabled,
-      .dlv-header select option:disabled { color: var(--muted); background: transparent; }
-      .dlv-header select { pointer-events: auto; }
     </style>
 
     <button class="dlv-btn" title="Preview full course path &amp; forecast">📚 Duolingo Path</button>
@@ -492,7 +432,6 @@
       <div class="dlv-inner ${initialTheme === 'dark' ? 'dark' : ''}">
         <div class="dlv-header">
           <h2>Duolingo Path</h2>
-          <select class="course-select" title="Active Course"></select>
           <button class="dlv-theme" title="Toggle theme">${initialTheme === 'dark' ? '☀️' : '🌙'}</button>
           <div class="spacer"></div>
           <button class="dlv-refresh">Reload</button>
@@ -588,7 +527,6 @@
         const downloadBtn = shadow.querySelector('.dlv-download');
         const closeBtn = shadow.querySelector('.dlv-close');
         const themeBtn = shadow.querySelector('.dlv-theme');
-        const courseSelect = shadow.querySelector('.course-select');
         const pathContent = shadow.querySelector('.path-content');
         const filterText = shadow.querySelector('.filter-text');
         const filterType = shadow.querySelector('.filter-type');
@@ -610,11 +548,10 @@
         let currentUserId = null;
         let currentToken = null;
         let currentCourseName = '';
-        let currentCourses = [];
         let summariesCache = null;
         let endpointUsed = null;
         let nextNode = null;
-        let reverseTargetDate = null;
+        let planState = { avgMins: null, dailyMins: 20, targetDate: '' };
 
         // ---------- Path rendering with filters + badges + links ----------
         const applyFilters = (sections) => {
@@ -692,14 +629,13 @@
                 currentUserId = data.userId;
                 currentToken = data.token;
                 currentCourseName = data.courseName;
-                currentCourses = data.courses;
                 nextNode = findNextNode(currentData);
                 window.__dlvPath = currentData;
-
-                // Patched Course selector
-                courseSelect.innerHTML = currentCourses.map(c =>
-                    `<option ${c.isCurrent ? 'selected' : ''} ${c.isCurrent ? '' : 'disabled title="Open this course on Duolingo to view it"'}>${esc(c.title)}${c.isCurrent ? '' : ' (open on Duolingo)'}</option>`
-                ).join('');
+                
+                // If the plan tab is already rendered, clear it so it can pick up new data
+                if (fcPlanContent.querySelector('.plan-wrap')) {
+                    fcPlanContent.innerHTML = '<div class="dlv-status">Data reloaded. Switch tabs or adjust sliders to update the plan.</div>';
+                }
 
                 renderPath();
                 downloadBtn.disabled = false;
@@ -738,7 +674,6 @@
                 const y = H - 5 - (p.xpPerSession / max) * (H - 15);
                 return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
             }).join(' ');
-            // Trend arrow
             let trend = '';
             if (points.length >= 4) {
                 const n = Math.floor(points.length / 3);
@@ -835,86 +770,150 @@
             fcContent.innerHTML = html;
         };
 
-        // ---------- Plan tab ----------
+        // ---------- Plan tab (Overhauled) ----------
         const renderPlan = () => {
             if (!currentData) { fcPlanContent.innerHTML = '<div class="dlv-error">Load the path first.</div>'; return; }
             if (!summariesCache) { fcPlanContent.innerHTML = '<div class="dlv-status">Load activity history first (Forecast tab).</div>'; return; }
+
             const win = parseInt(fcWindow.value, 10);
             const pace = computePace(summariesCache, win);
-            if (pace.pace === 0) { fcPlanContent.innerHTML = '<div class="dlv-status">No pace data available.</div>'; return; }
-            const current = findCurrentPosition(currentData);
-            if (!current) { fcPlanContent.innerHTML = '<div class="dlv-status">Course complete — nothing left to plan! 🎉</div>'; return; }
-            const currentIdx = currentData.indexOf(current.section);
-            const totals = totalSessions(currentData);
-            const remaining = totals.total - totals.done;
+            const timeData = computeTime(summariesCache, win);
 
-            // Reverse calculator
-            if (!reverseTargetDate) {
-                reverseTargetDate = new Date(Date.now() + 90 * DAY).toISOString().slice(0, 10);
+            // Initialize planState.avgMins if null based on actual data
+            if (planState.avgMins === null) {
+                const est = timeData.avgSecPerSession > 0 ? timeData.avgSecPerSession / 60 : 2;
+                planState.avgMins = Math.max(1, Math.min(15, Math.round(est * 2) / 2)); // round to nearest 0.5
             }
-            const target = new Date(reverseTargetDate + 'T23:59:59').getTime();
-            const daysLeft = Math.max(0, (target - Date.now()) / DAY);
-            const requiredPace = daysLeft > 0 ? remaining / daysLeft : Infinity;
-            const diff = requiredPace - pace.pace;
-            const status = diff <= 0 ? 'ahead' : (diff > pace.pace * 0.5 ? 'behind' : 'on-track');
-            const statusText = diff <= 0
-            ? `Ahead by ${Math.abs(diff).toFixed(2)}/day ✓`
-        : `Behind by ${diff.toFixed(2)}/day`;
 
-          // Milestones
-          const milestones = computeMilestones(currentData, currentIdx, pace.pace);
-          const milestoneRows = milestones.map(m => `<tr><td><b>${esc(m.cefr)}</b></td><td>${m.date}</td><td><em>${fmtDays(m.days)}</em></td></tr>`).join('');
+            const update = () => {
+                let remainingLessons = 0;
+                let remainingExtras = 0;
+                currentData.forEach(sec => (sec.units || []).forEach(u => (u.levels || []).forEach(l => {
+                    const rem = levelRemaining(l);
+                    if (rem > 0) {
+                        if (l.type === 'story' || l.type === 'duo_radio') remainingExtras += rem;
+                        else if (l.type === 'skill' || l.type === 'practice' || l.type === 'unit_review') remainingLessons += rem;
+                    }
+                })));
+                
+                const remainingTotal = remainingLessons + remainingExtras;
+                const metaEl = fcPlanContent.querySelector('#planTotalMeta');
+                if (metaEl) {
+                    metaEl.textContent = `${remainingTotal} total sessions remaining (${remainingLessons} lessons/reviews, ${remainingExtras} stories/radios).`;
+                }
 
-          // What-if
-          const whatIfPaces = [1, 1.5, 2, 2.5, 3, 4, 5, 7, 10];
-          const whatIfRows = whatIfPaces.map(p => {
-              const d = p > 0 ? remaining / p : Infinity;
-              const delta = p - pace.pace;
-              const deltaStr = delta >= 0 ? `+${delta.toFixed(2)}` : delta.toFixed(2);
-              return `<tr><td>${p}/day <em>(${deltaStr})</em></td><td><b>${forecastDate(d)}</b></td><td><em>${fmtDays(d)}</em></td></tr>`;
-          }).join('');
+                if (remainingTotal === 0) {
+                    fcPlanContent.innerHTML = '<div class="dlv-status">Course complete! 🎉</div>';
+                    return;
+                }
 
-          fcPlanContent.innerHTML = `
-        <div class="fc-card">
-          <h3>Reverse calculator</h3>
-          <div class="plan-row">
-            <div>
-              <label>Target completion date</label>
-              <input type="date" class="plan-target" value="${reverseTargetDate}">
-            </div>
-            <div>
-              <label>Days remaining</label>
-              <div style="padding:8px 0;font-size:16px;font-weight:600">${Math.round(daysLeft)} days</div>
-            </div>
-            <div>
-              <label>Required pace</label>
-              <div style="padding:8px 0;font-size:16px;font-weight:600">${isFinite(requiredPace) ? requiredPace.toFixed(2) + '/day' : '—'}</div>
-            </div>
-            <div>
-              <label>Current pace</label>
-              <div style="padding:8px 0;font-size:16px;font-weight:600">${pace.pace.toFixed(2)}/day</div>
-            </div>
-          </div>
-          <div class="plan-status ${status}">${statusText} — ${remaining} sessions remaining to hit ${reverseTargetDate}</div>
-        </div>
+                // Default target date if not set
+                if (!planState.targetDate) {
+                    planState.targetDate = forecastDate((remainingTotal * planState.avgMins) / planState.dailyMins);
+                }
 
-        <div class="fc-card">
-          <h3>CEFR milestones</h3>
-          <table class="fc-table"><thead><tr><th>Level complete</th><th>Projected date</th><th>Days from now</th></tr></thead><tbody>${milestoneRows || '<tr><td colspan="3"><em>No milestones detected</em></td></tr>'}</tbody></table>
-        </div>
+                const totalMins = remainingTotal * planState.avgMins;
+                const targetTime = new Date(planState.targetDate + 'T23:59:59').getTime();
+                const daysLeft = Math.max(1, (targetTime - Date.now()) / DAY);
+                const reqSess = remainingTotal / daysLeft;
+                const reqMins = reqSess * planState.avgMins;
 
-        <div class="fc-card">
-          <h3>What-if simulator</h3>
-          <div class="fc-meta">Remaining: ${remaining} sessions. If you did X sessions per day…</div>
-          <table class="fc-table" style="margin-top:8px"><thead><tr><th>Sessions/day</th><th>Projected finish</th><th>Time from now</th></tr></thead><tbody>${whatIfRows}</tbody></table>
-        </div>
-      `;
+                const projDays = totalMins / planState.dailyMins;
+                const projDate = forecastDate(projDays);
 
-          fcPlanContent.querySelector('.plan-target').addEventListener('change', e => {
-              reverseTargetDate = e.target.value;
-              renderPlan();
-          });
-      };
+                // Update labels
+                const avgLabel = fcPlanContent.querySelector('#planAvgLabel');
+                if (avgLabel) avgLabel.textContent = planState.avgMins + ' min';
+                
+                const dailyLabel = fcPlanContent.querySelector('#planDailyLabel');
+                if (dailyLabel) dailyLabel.textContent = planState.dailyMins + ' min';
+                
+                const reqMeta = fcPlanContent.querySelector('#reqMeta');
+                if (reqMeta) reqMeta.innerHTML = `Requires <b>${reqSess.toFixed(1)} sessions/day</b> (~${reqMins.toFixed(0)} min/day)`;
+                
+                const projMeta = fcPlanContent.querySelector('#projMeta');
+                if (projMeta) projMeta.innerHTML = `Finishes in <b>${Math.ceil(projDays)} days</b> (${projDate})`;
+
+                // Update table
+                let cumMins = 0;
+                let rowsHtml = '';
+                currentData.forEach(sec => {
+                    const rem = sectionRemaining(sec);
+                    if (rem > 0) {
+                        const time = rem * planState.avgMins;
+                        cumMins += time;
+                        const fDate = forecastDate(cumMins / planState.dailyMins);
+                        rowsHtml += `<tr><td>Section ${sec.index}</td><td>${rem}</td><td>${Math.round(time)} min</td><td>${fDate}</td></tr>`;
+                    }
+                });
+                const tbody = fcPlanContent.querySelector('#planTableBody');
+                if (tbody) tbody.innerHTML = rowsHtml;
+            };
+
+            if (!fcPlanContent.querySelector('.plan-wrap')) {
+                fcPlanContent.innerHTML = `
+                <div class="plan-wrap">
+                    <div class="fc-card">
+                        <h3>Your Current Speed (last ${win === 0 ? 'all time' : win + ' days'})</h3>
+                        <div class="plan-metrics">
+                            <div class="plan-metric">
+                                <div class="k">Sessions / day</div>
+                                <div class="v">${pace.pace.toFixed(1)}</div>
+                            </div>
+                            <div class="plan-metric">
+                                <div class="k">Time / session</div>
+                                <div class="v">${(timeData.avgSecPerSession > 0 ? (timeData.avgSecPerSession/60).toFixed(1) : '—')} min</div>
+                            </div>
+                            <div class="plan-metric">
+                                <div class="k">Est. Daily Time</div>
+                                <div class="v">${Math.round(pace.pace * (timeData.avgSecPerSession/60 || 0))} min</div>
+                            </div>
+                        </div>
+                        <div class="fc-meta" id="planTotalMeta"></div>
+                    </div>
+
+                    <div class="plan-goals">
+                        <div class="goal-group">
+                            <label>Avg Time per Session: <b id="planAvgLabel"></b></label>
+                            <input type="range" id="planAvgSlider" min="1" max="15" step="0.5" value="${planState.avgMins}">
+                        </div>
+                        <div class="goal-group">
+                            <label>Target Completion Date</label>
+                            <input type="date" id="planDate" value="${planState.targetDate}">
+                            <div class="goal-meta" id="reqMeta"></div>
+                        </div>
+                        <div class="goal-group">
+                            <label>Daily Study Time: <b id="planDailyLabel"></b></label>
+                            <input type="range" id="planDailySlider" min="5" max="180" step="5" value="${planState.dailyMins}">
+                            <div class="goal-meta" id="projMeta"></div>
+                        </div>
+                    </div>
+
+                    <div class="fc-card">
+                        <h3>Section-by-Section Breakdown</h3>
+                        <table class="fc-table">
+                            <thead><tr><th>Section</th><th>Sessions Left</th><th>Time Left</th><th>Projected Finish</th></tr></thead>
+                            <tbody id="planTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>`;
+
+                fcPlanContent.querySelector('#planAvgSlider').addEventListener('input', (e) => {
+                    planState.avgMins = Number(e.target.value);
+                    update();
+                });
+                fcPlanContent.querySelector('#planDate').addEventListener('change', (e) => {
+                    planState.targetDate = e.target.value;
+                    update();
+                });
+                fcPlanContent.querySelector('#planDailySlider').addEventListener('input', (e) => {
+                    planState.dailyMins = Number(e.target.value);
+                    update();
+                });
+            }
+
+            update();
+        };
 
         // ---------- Export helpers ----------
         const getFilteredOrAll = () => currentData;
@@ -1138,11 +1137,6 @@
             const isDark = inner.classList.toggle('dark');
             themeBtn.textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
-        });
-        courseSelect.addEventListener('change', () => {
-            // Only current course is loaded; hint user.
-            const sel = courseSelect.options[courseSelect.selectedIndex];
-            if (sel.disabled) { courseSelect.value = ''; }
         });
 
         let filterTimer = null;
