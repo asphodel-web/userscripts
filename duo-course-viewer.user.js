@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Duolingo Path Viewer + Forecast
 // @namespace    https://github.com/duolingo-path-viewer
-// @version      2.1.1
-// @description  Full path preview, forecast, planning, milestones, export, theme.
+// @version      2.2.0
+// @description  Full path preview, forecast, planning, milestones, exports, streak analytics.
 // @match        https://www.duolingo.com/*
 // @match        https://*.duolingo.com/*
 // @grant        none
@@ -44,7 +44,13 @@
     const COMPLETE_STATES = new Set(['legendary', 'passed', 'gold', 'complete', 'completed']);
     const DAY = 86400000;
     const AVG_XP_PER_SESSION = 15;
+    const JUMP_TYPES = new Set(['skill', 'practice', 'story', 'duo_radio']);
     const THEME_KEY = 'duo-path-viewer-theme';
+    const PLAN_KEY = 'duo-path-viewer-plan';
+    const SNAPSHOT_KEY = 'duo-path-viewer-snapshot';
+    const GOAL_KEY = 'duo-path-viewer-daily-goal';
+    const TYPE_LABELS = { all: 'All types', skill: 'Skills', story: 'Stories', duo_radio: 'Radio', practice: 'Practice', unit_review: 'Unit reviews', chest: 'Chests' };
+    const STATE_LABELS = { all: 'All states', incomplete: 'Incomplete', complete: 'Complete', locked: 'Locked', 'in-progress': 'In progress' };
 
     const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     const roundRect = (ctx, x, y, w, h, r) => {
@@ -55,6 +61,17 @@
         ctx.arcTo(x, y + h, x, y, r);
         ctx.arcTo(x, y, x + w, y, r);
         ctx.closePath();
+    };
+    const localDateStr = (d) => {
+        d = d || new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    };
+    const daysAgoLocal = (dateStr) => {
+        const today = new Date();
+        today.setHours(12, 0, 0, 0);
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const then = new Date(y, m-1, d, 12, 0, 0, 0);
+        return Math.round((today - then) / DAY);
     };
 
     // ---------- Path helpers ----------
@@ -71,7 +88,10 @@
     const totalSessions = secs => secs.reduce((a, s) => { const r = sectionSessions(s); return { done: a.done + r.done, total: a.total + r.total }; }, { done: 0, total: 0 });
     const isComplete = r => r.total > 0 && r.done >= r.total;
     const fmtDays = d => !isFinite(d) ? '∞' : d < 1 ? '<1 day' : `${Math.ceil(d)} days`;
-    const forecastDate = d => !isFinite(d) ? '—' : new Date(Date.now() + d * DAY).toISOString().slice(0, 10);
+    const forecastDate = d => {
+        if (!isFinite(d)) return '—';
+        return localDateStr(new Date(Date.now() + d * DAY));
+    };
 
     const findNextNode = (sections) => {
         for (const sec of sections) for (const u of sec.units || []) {
@@ -84,7 +104,6 @@
         }
         return null;
     };
-
     const findCurrentPosition = (sections) => {
         for (const sec of sections) for (const u of sec.units || []) {
             const rem = unitRemaining(u);
@@ -220,7 +239,11 @@
             date: toYmd(x.date != null ? x.date : (x.day != null ? x.day : x.ymd)),
             xp: Number(x.gainedXp != null ? x.gainedXp : (x.xp != null ? x.xp : (x.totalXp != null ? x.totalXp : 0))) || 0,
             numSessions: x.numSessions == null ? null : Number(x.numSessions),
-            totalSessionTime: Number(x.totalSessionTime) || 0
+            totalSessionTime: Number(x.totalSessionTime) || 0,
+            streakExtended: !!x.streakExtended,
+            frozen: !!x.frozen,
+            repaired: !!x.repaired,
+            shielded: !!x.shielded
         })).filter(x => x.date);
     };
     const tryJson = async (url, token) => {
@@ -229,8 +252,8 @@
         return r.json();
     };
     const fetchDailySummaries = async (userId, token, daysBack = 400) => {
-        const endDate = new Date().toISOString().slice(0, 10);
-        const startDate = new Date(Date.now() - daysBack * DAY).toISOString().slice(0, 10);
+        const endDate = localDateStr();
+        const startDate = localDateStr(new Date(Date.now() - daysBack * DAY));
         const attempts = [
             { label: 'xp_summaries', url: `https://www.duolingo.com/2017-06-30/users/${userId}/xp_summaries?startDate=${startDate}&endDate=${endDate}` },
             { label: 'user.xpGains', url: `https://www.duolingo.com/2017-06-30/users/${userId}?fields=xpGains` },
@@ -297,6 +320,77 @@
         const labels = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
         return totals.map((total, i) => ({ day: labels[i], total, avg: counts[i] ? total / counts[i] : 0 }));
     };
+    const computeComparison = (summaries, days) => {
+        if (days <= 0) return null;
+        const now = Date.now();
+        const currCutoff = now - days * DAY;
+        const prevCutoff = currCutoff - days * DAY;
+        let curr = 0, prev = 0;
+        summaries.forEach(s => {
+            const t = new Date(s.date + 'T00:00:00Z').getTime();
+            if (!isFinite(t)) return;
+            if (t >= currCutoff) curr += sessionsOf(s);
+            else if (t >= prevCutoff) prev += sessionsOf(s);
+        });
+        if (prev === 0) return null;
+        const pct = ((curr - prev) / prev) * 100;
+        return { currPace: curr / days, prevPace: prev / days, pct };
+    };
+    const computeStreak = (summaries) => {
+        const byDate = new Map();
+        summaries.forEach(s => byDate.set(s.date, s));
+        const today = new Date();
+        today.setHours(12, 0, 0, 0);
+        const isStreakDay = s => s && (s.streakExtended || s.frozen || s.repaired);
+
+        let current = 0;
+        const todaySummary = byDate.get(localDateStr(today));
+        const startOffset = isStreakDay(todaySummary) ? 0 : 1;
+        for (let i = startOffset; i < 2000; i++) {
+            const dt = new Date(today);
+            dt.setDate(dt.getDate() - i);
+            const s = byDate.get(localDateStr(dt));
+            if (isStreakDay(s)) current++;
+            else break;
+        }
+
+        const sorted = [...summaries].sort((a,b) => a.date.localeCompare(b.date));
+        let longest = 0, run = 0;
+        for (const s of sorted) {
+            if (isStreakDay(s)) { run++; if (run > longest) longest = run; }
+            else run = 0;
+        }
+
+        const monthStart = localDateStr(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+        let freezesUsed = 0, repairedDays = 0;
+        for (const s of summaries) {
+            if (s.date >= monthStart) {
+                if (s.frozen) freezesUsed++;
+                if (s.repaired) repairedDays++;
+            }
+        }
+
+        return { current, longest, freezesUsed, repairedDays };
+    };
+    const computeMilestones = (sections, currentIdx, pace) => {
+        const out = [];
+        let cum = 0;
+        const seen = new Set();
+        for (let i = currentIdx; i < sections.length; i++) {
+            cum += sectionRemaining(sections[i]);
+            const cefr = sections[i].cefr?.level || sections[i].cefrLevel || '—';
+            const nextCefr = sections[i + 1]?.cefr?.level || sections[i + 1]?.cefrLevel;
+            const isLast = i === sections.length - 1;
+            if ((nextCefr && nextCefr !== cefr) || isLast) {
+                if (!seen.has(cefr)) {
+                    seen.add(cefr);
+                    const d = pace > 0 ? cum / pace : Infinity;
+                    out.push({ level: cefr, date: forecastDate(d), days: d });
+                }
+            }
+        }
+        return out;
+    };
     const buildForecast = (sections, currentIdx, pace) => {
         const out = [];
         let cum = 0;
@@ -362,7 +456,13 @@
       .dlv-body { flex: 1; overflow: auto; padding: 16px 20px; font-size: 14px; line-height: 1.5; }
       .dlv-panel { display: none; }
       .dlv-panel.active { display: block; }
-      .dlv-summary { padding: 8px 12px; background: var(--info-bg); color: var(--info-fg); border-radius: 6px; margin-bottom: 12px; font-weight: 600; }
+      .dlv-summary { padding: 10px 12px; background: var(--info-bg); color: var(--info-fg); border-radius: 6px; margin-bottom: 12px; font-weight: 600; }
+      .dlv-summary .dlv-summary-top { display: flex; justify-content: space-between; align-items: baseline; }
+      .dlv-bar { height: 8px; background: rgba(0,0,0,0.1); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+      .dlv-inner.dark .dlv-bar { background: rgba(255,255,255,0.1); }
+      .dlv-bar > div { height: 100%; background: var(--accent); transition: width 0.2s; }
+      .unit-bar { display: inline-block; width: 60px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; vertical-align: middle; margin-left: 8px; }
+      .unit-bar > span { display: block; height: 100%; background: var(--accent); }
       .dlv-body details { margin-left: 1em; }
       .dlv-body summary { cursor: pointer; padding: 2px 0; }
       .dlv-body em { color: var(--muted); font-style: normal; }
@@ -379,6 +479,9 @@
       .dlv-body .badge { display: inline-block; padding: 1px 6px; border-radius: 8px; font-size: 11px; font-weight: 600; background: var(--accent); color: #fff; margin-left: 6px; }
       .dlv-error { color: #c00; white-space: pre-wrap; padding: 8px 0; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
       .dlv-status { padding: 8px 0; color: var(--muted); }
+      .visit-banner { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--info-bg); color: var(--info-fg); border-radius: 8px; margin-bottom: 12px; font-size: 13px; }
+      .visit-banner .vb-text { flex: 1; font-weight: 600; }
+      .visit-banner .vb-close { background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; padding: 0 4px; line-height: 1; }
       .fc-toolbar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 8px 0 16px; }
       .fc-toolbar select, .fc-toolbar button { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; background: var(--btn-bg); color: var(--btn-fg); cursor: pointer; }
       .fc-card { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; background: var(--card-bg); }
@@ -395,6 +498,8 @@
       .fc-spark-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
       .fc-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
       .fc-quality { width: 100%; height: 180px; display: block; }
+      .fc-heatmap { width: 100%; display: block; margin-top: 4px; }
+      .fc-heatmap rect { shape-rendering: crispEdges; }
       .fc-dow { display: flex; gap: 4px; height: 160px; padding: 4px 0; }
       .fc-dow .col { flex: 1; display: flex; flex-direction: column; height: 100%; }
       .fc-dow .bar-area { flex: 1; display: flex; align-items: flex-end; width: 100%; }
@@ -404,20 +509,27 @@
       .filters input, .filters select { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); font-size: 13px; background: var(--bg); color: var(--fg); }
       .filters input { flex: 1; min-width: 180px; }
       .filters button { padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--btn-bg); color: var(--btn-fg); cursor: pointer; font-size: 12px; }
-      
       .plan-wrap { display: flex; flex-direction: column; gap: 12px; }
-      .plan-metrics { display: flex; gap: 12px; margin-bottom: 12px; }
-      .plan-metric { flex: 1; background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
+      .plan-metrics { display: flex; gap: 12px; margin-bottom: 12px; flex-wrap: wrap; }
+      .plan-metric { flex: 1; min-width: 110px; background: var(--bg); padding: 12px; border-radius: 8px; border: 1px solid var(--border); text-align: center; }
       .plan-metric .k { font-size: 11px; text-transform: uppercase; color: var(--muted); font-weight: 600; }
       .plan-metric .v { font-size: 20px; font-weight: 700; color: var(--accent); margin-top: 4px; }
+      .plan-metric .v small { font-size: 11px; color: var(--muted); font-weight: 400; }
       .plan-goals { display: flex; gap: 12px; flex-wrap: wrap; }
       .goal-group { flex: 1; min-width: 200px; background: var(--card-bg); padding: 14px; border-radius: 8px; border: 1px solid var(--border); }
-      .goal-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--fg); }
+      .goal-group label { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; margin-bottom: 8px; color: var(--fg); }
       .goal-group input[type=date] { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--fg); font-family: inherit; }
       .goal-group input[type=range] { width: 100%; margin: 8px 0; }
       .goal-meta { font-size: 12px; color: var(--muted); margin-top: 8px; }
       .goal-meta b { color: var(--fg); }
-
+      .reset-avg { font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); background: var(--btn-bg); color: var(--btn-fg); border-radius: 4px; cursor: pointer; margin-left: auto; font-weight: normal; }
+      .plan-mode-toggle { display: flex; gap: 4px; margin-bottom: 0; }
+      .plan-mode-toggle button { padding: 6px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--btn-bg); color: var(--btn-fg); cursor: pointer; font: 600 13px system-ui; }
+      .plan-mode-toggle button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+      .goal-input { width: 55px; padding: 2px 6px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--fg); font-size: 13px; font-family: inherit; text-align: center; }
+      .goal-status { font-weight: 600; }
+      .goal-status.done { color: var(--done-fg); }
+      .goal-status.pending { color: var(--muted); }
       .export-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
       .export-card { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; background: var(--card-bg); display: flex; flex-direction: column; gap: 8px; }
       .export-card h3 { margin: 0; font-size: 14px; color: var(--fg); }
@@ -431,10 +543,10 @@
     <div class="dlv-modal">
       <div class="dlv-inner ${initialTheme === 'dark' ? 'dark' : ''}">
         <div class="dlv-header">
-          <h2>Duolingo Path</h2>
+          <h2 id="dlv-title">Duolingo Path</h2>
           <button class="dlv-theme" title="Toggle theme">${initialTheme === 'dark' ? '☀️' : '🌙'}</button>
           <div class="spacer"></div>
-          <button class="dlv-refresh">Reload</button>
+          <button class="dlv-refresh">Reload all</button>
           <button class="dlv-download" disabled>Download JSON</button>
           <button class="dlv-close">Close</button>
         </div>
@@ -446,6 +558,10 @@
         </div>
         <div class="dlv-body">
           <div class="dlv-panel active" data-panel="path">
+            <div class="visit-banner" style="display:none">
+              <span class="vb-text"></span>
+              <button class="vb-close" title="Dismiss">×</button>
+            </div>
             <div class="filters">
               <input class="filter-text" type="search" placeholder="Search units, stories, skills…">
               <select class="filter-type">
@@ -465,8 +581,10 @@
                 <option value="in-progress">In progress</option>
               </select>
               <button class="filter-clear">Clear</button>
+              <button class="filter-expand">Expand all</button>
+              <button class="filter-collapse">Collapse completed</button>
             </div>
-            <div class="path-content"><div class="dlv-status">Click "Reload" to load your path.</div></div>
+            <div class="path-content"><div class="dlv-status">Click "Reload all" to load your path.</div></div>
           </div>
           <div class="dlv-panel" data-panel="forecast">
             <div class="fc-toolbar">
@@ -496,17 +614,17 @@
               </div>
               <div class="export-card">
                 <h3>CSV</h3>
-                <p>One row per level, ready for spreadsheet analysis.</p>
+                <p>One row per level with CEFR &amp; section index — ready for analysis.</p>
                 <button class="ex-csv" disabled>Download CSV</button>
               </div>
               <div class="export-card">
                 <h3>Markdown</h3>
-                <p>Nested checklist — perfect for Obsidian, Notion, or a repo.</p>
+                <p>Nested checklist with YAML frontmatter — ideal for Obsidian / Notion.</p>
                 <button class="ex-md" disabled>Download Markdown</button>
               </div>
               <div class="export-card">
                 <h3>Printable study plan</h3>
-                <p>Opens a new tab with a clean checklist you can print or save as PDF.</p>
+                <p>Print-to-PDF checklist with per-unit projected finish dates.</p>
                 <button class="ex-print" disabled>Open print view</button>
               </div>
               <div class="export-card">
@@ -521,6 +639,7 @@
     </div>`;
 
         const inner = shadow.querySelector('.dlv-inner');
+        const titleEl = shadow.querySelector('#dlv-title');
         const btn = shadow.querySelector('.dlv-btn');
         const modal = shadow.querySelector('.dlv-modal');
         const refreshBtn = shadow.querySelector('.dlv-refresh');
@@ -532,6 +651,11 @@
         const filterType = shadow.querySelector('.filter-type');
         const filterState = shadow.querySelector('.filter-state');
         const filterClear = shadow.querySelector('.filter-clear');
+        const filterExpand = shadow.querySelector('.filter-expand');
+        const filterCollapse = shadow.querySelector('.filter-collapse');
+        const visitBanner = shadow.querySelector('.visit-banner');
+        const vbText = shadow.querySelector('.vb-text');
+        const vbClose = shadow.querySelector('.vb-close');
         const loadBtn = shadow.querySelector('.dlv-load');
         const fcWindow = shadow.querySelector('.fc-window');
         const fcInfo = shadow.querySelector('.fc-pace-info');
@@ -549,11 +673,46 @@
         let currentToken = null;
         let currentCourseName = '';
         let summariesCache = null;
+        let summariesFetchedAt = 0;
         let endpointUsed = null;
         let nextNode = null;
-        let planState = { avgMins: null, dailyMins: 20, targetDate: '' };
+        let shouldScrollToNext = false;
 
-        // ---------- Path rendering with filters + badges + links ----------
+        // Load plan state from localStorage
+        const loadPlanState = () => {
+            try {
+                const s = JSON.parse(localStorage.getItem(PLAN_KEY) || 'null');
+                if (s) return s;
+            } catch (e) {}
+            return { avgMins: null, avgMinsIsCustom: false, dailyMins: 20, targetDate: '', goalMode: 'date' };
+        };
+        let planState = loadPlanState();
+        const savePlanState = () => {
+            try { localStorage.setItem(PLAN_KEY, JSON.stringify(planState)); } catch (e) {}
+        };
+
+        let dailyGoal = parseInt(localStorage.getItem(GOAL_KEY) || '5', 10) || 5;
+
+        const loadSnapshot = () => {
+            try { return JSON.parse(localStorage.getItem(SNAPSHOT_KEY) || 'null'); } catch (e) { return null; }
+        };
+        const saveSnapshot = (snap) => {
+            try { localStorage.setItem(SNAPSHOT_KEY, JSON.stringify(snap)); } catch (e) {}
+        };
+
+        const matchStateFilter = (l, filter) => {
+            if (filter === 'all') return true;
+            if (filter === 'complete') return COMPLETE_STATES.has(l.state);
+            if (filter === 'locked') return l.state === 'locked';
+            if (filter === 'incomplete') return !COMPLETE_STATES.has(l.state);
+            if (filter === 'in-progress') {
+                if (COMPLETE_STATES.has(l.state)) return false;
+                if (l.state === 'locked') return false;
+                return (l.finishedSessions || 0) > 0;
+            }
+            return true;
+        };
+
         const applyFilters = (sections) => {
             const txt = filterText.value.trim().toLowerCase();
             const type = filterType.value;
@@ -562,14 +721,7 @@
                 const units = (sec.units || []).map(u => {
                     const levels = (u.levels || []).filter(l => {
                         if (type !== 'all' && l.type !== type) return false;
-                        if (state === 'complete' && !COMPLETE_STATES.has(l.state)) return false;
-                        if (state === 'locked' && l.state !== 'locked') return false;
-                        if (state === 'incomplete' && COMPLETE_STATES.has(l.state)) return false;
-                        if (state === 'in-progress') {
-                            if (COMPLETE_STATES.has(l.state)) return false;
-                            if (l.state === 'locked') return false;
-                            if ((l.finishedSessions || 0) <= 0) return false;
-                        }
+                        if (!matchStateFilter(l, state)) return false;
                         if (txt) {
                             const fields = [
                                 l.debugName, l.state, l.type,
@@ -587,12 +739,55 @@
             }).filter(sec => sec.units.length > 0);
         };
 
+        const updateFilterCounts = () => {
+            if (!currentData) return;
+            const txt = filterText.value.trim().toLowerCase();
+            const stateFilter = filterState.value;
+            const typeFilter = filterType.value;
+            const typeCounts = {}, stateCounts = {};
+
+            currentData.forEach(sec => (sec.units || []).forEach(u => (u.levels || []).forEach(l => {
+                if (txt) {
+                    const fields = [l.debugName, l.state, l.type, l.pathLevelClientData?.teachingObjective, l.pathLevelClientData?.duoRadioSummary?.name, l.pathLevelClientData?.storyName];
+                    if (!fields.some(f => f && String(f).toLowerCase().includes(txt))) return;
+                }
+                if (matchStateFilter(l, stateFilter)) {
+                    typeCounts[l.type] = (typeCounts[l.type] || 0) + 1;
+                    typeCounts.all = (typeCounts.all || 0) + 1;
+                }
+                if (typeFilter === 'all' || l.type === typeFilter) {
+                    stateCounts.all = (stateCounts.all || 0) + 1;
+                    if (COMPLETE_STATES.has(l.state)) stateCounts.complete = (stateCounts.complete || 0) + 1;
+                    else stateCounts.incomplete = (stateCounts.incomplete || 0) + 1;
+                    if (l.state === 'locked') stateCounts.locked = (stateCounts.locked || 0) + 1;
+                    if (!COMPLETE_STATES.has(l.state) && l.state !== 'locked' && (l.finishedSessions || 0) > 0) {
+                        stateCounts['in-progress'] = (stateCounts['in-progress'] || 0) + 1;
+                    }
+                }
+            })));
+
+            filterType.querySelectorAll('option').forEach(opt => {
+                opt.textContent = `${TYPE_LABELS[opt.value]} (${typeCounts[opt.value] || 0})`;
+            });
+            filterState.querySelectorAll('option').forEach(opt => {
+                opt.textContent = `${STATE_LABELS[opt.value]} (${stateCounts[opt.value] || 0})`;
+            });
+        };
+
         const renderPath = () => {
-            if (!currentData) { pathContent.innerHTML = '<div class="dlv-status">Click "Reload" to load your path.</div>'; return; }
+            if (!currentData) { pathContent.innerHTML = '<div class="dlv-status">Click "Reload all" to load your path.</div>'; return; }
+            updateFilterCounts();
             const filtered = applyFilters(currentData);
             if (!filtered.length) { pathContent.innerHTML = '<div class="dlv-status">No levels match the current filters.</div>'; return; }
             const tot = totalSessions(filtered);
-            const head = `<div class="dlv-summary">${tot.done}/${tot.total} sessions · ${filtered.length} sections</div>`;
+            const pct = tot.total > 0 ? (tot.done / tot.total * 100) : 0;
+            const head = `<div class="dlv-summary">
+              <div class="dlv-summary-top">
+                <span>${tot.done}/${tot.total} sessions · ${filtered.length} sections</span>
+                <span>${pct.toFixed(1)}%</span>
+              </div>
+              <div class="dlv-bar"><div style="width:${pct}%"></div></div>
+            </div>`;
             const html = filtered.map(sec => {
                 const ss = sectionSessions(sec);
                 const hasNext = nextNode && sec.units.some(u => u.levels.includes(nextNode.level));
@@ -600,15 +795,17 @@
           <summary class="${isComplete(ss) ? 'done' : ''}"><b>Section ${esc(sec.index)}</b> <em>[${esc(sec.type)}] ${sec.completedUnits}/${sec.totalUnits} units</em> <span class="sess">${ss.done}/${ss.total}</span>${hasNext ? '<span class="badge">▶ start</span>' : ''}</summary>
           ${(sec.units || []).map(u => {
                   const us = unitSessions(u);
+                  const uPct = us.total > 0 ? (us.done / us.total * 100) : 0;
                   const unitNext = nextNode && u.levels.includes(nextNode.level);
                   return `<details class="${isComplete(us) ? 'unit-done' : ''} ${unitNext ? 'next-unit' : ''}">
-              <summary>Unit ${esc(u.unitNumber)} ${u.isUnlocked === false ? '<span class="lock">🔒</span>' : ''} — ${esc(u.teachingObjective || '')} <em>${esc(u.cefrLevel || '')}</em> <span class="sess">${us.done}/${us.total}</span></summary>
+              <summary>Unit ${esc(u.unitNumber)} ${u.isUnlocked === false ? '<span class="lock">🔒</span>' : ''} — ${esc(u.teachingObjective || '')} <em>${esc(u.cefrLevel || '')}</em> <span class="sess">${us.done}/${us.total}</span><span class="unit-bar"><span style="width:${uPct}%"></span></span></summary>
               <ul>${(u.levels || []).map(l => {
                 const c = l.pathLevelClientData || {};
                 const label = c.teachingObjective || c.duoRadioSummary?.name || c.storyName || l.debugName;
                 const r = levelSessions(l);
                 const isNext = nextNode && l === nextNode.level;
-                const link = l.state !== 'locked' && l.id ? ` <a class="jump" href="https://www.duolingo.com/lesson/${esc(l.id)}" target="_blank" rel="noopener" title="Open lesson">↗</a>` : '';
+                const canJump = JUMP_TYPES.has(l.type) && l.state !== 'locked' && l.id;
+                const link = canJump ? ` <a class="jump" href="https://www.duolingo.com/lesson/${esc(l.id)}" target="_blank" rel="noopener" title="Open lesson">↗</a>` : '';
                 return `<li class="${isNext ? 'next' : ''}"><span class="sess">${r.done}/${r.total}</span> <em>[${esc(l.type)}]</em> ${esc(label)} <em>(${esc(l.state)})</em>${isNext ? '<span class="badge">▶ next</span>' : ''}${link}</li>`;
             }).join('')}</ul>
             </details>`;
@@ -616,7 +813,13 @@
         </details>`;
           }).join('');
           pathContent.innerHTML = head + html;
-      };
+
+          if (shouldScrollToNext) {
+              shouldScrollToNext = false;
+              const el = pathContent.querySelector('li.next');
+              if (el) setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 50);
+          }
+        };
 
         const loadPath = async () => {
             pathContent.innerHTML = '<div class="dlv-status">Decoding duo.state…</div>';
@@ -631,11 +834,45 @@
                 currentCourseName = data.courseName;
                 nextNode = findNextNode(currentData);
                 window.__dlvPath = currentData;
-                
-                if (fcPlanContent.querySelector('.plan-wrap')) {
-                    fcPlanContent.innerHTML = '<div class="dlv-status">Data reloaded. Switch tabs or adjust sliders to update the plan.</div>';
+                titleEl.textContent = `Duolingo Path · ${currentCourseName}`;
+
+                // Snapshot comparison (since last visit)
+                const prev = loadSnapshot();
+                const totals = totalSessions(currentData);
+                const curr = findCurrentPosition(currentData);
+                const newSnap = {
+                    ts: Date.now(),
+                    course: currentCourseName,
+                    done: totals.done,
+                    total: totals.total,
+                    secIdx: curr ? curr.section.index : -1,
+                    unitNum: curr ? curr.unit.unitNumber : -1
+                };
+
+                if (!prev || prev.course !== currentCourseName) {
+                    // First visit or course change - save silently
+                    saveSnapshot(newSnap);
+                    visitBanner.style.display = 'none';
+                } else if (newSnap.done !== prev.done) {
+                    // Progress since last save
+                    const days = Math.max(0, Math.round((newSnap.ts - prev.ts) / DAY));
+                    const delta = newSnap.done - prev.done;
+                    if (delta > 0) {
+                        vbText.textContent = `Since your last visit ${days === 0 ? 'today' : days === 1 ? 'yesterday' : `${days} days ago`}: +${delta} sessions completed`;
+                        visitBanner.style.display = 'flex';
+                    } else {
+                        visitBanner.style.display = 'none';
+                    }
+                    saveSnapshot(newSnap);
+                } else {
+                    visitBanner.style.display = 'none';
                 }
 
+                if (fcPlanContent.querySelector('.plan-wrap')) {
+                    fcPlanContent.innerHTML = '<div class="dlv-status">Data reloaded. Open the Plan tab to refresh.</div>';
+                }
+
+                shouldScrollToNext = true;
                 renderPath();
                 downloadBtn.disabled = false;
                 [exJson, exCsv, exMd, exPrint, exPng].forEach(b => b.disabled = false);
@@ -651,15 +888,13 @@
             const now = Date.now();
             const buckets = new Array(days).fill(0);
             summaries.forEach(s => {
-                const t = new Date(s.date + 'T00:00:00Z').getTime();
-                if (!isFinite(t)) return;
-                const idx = Math.floor((now - t) / DAY);
+                const idx = daysAgoLocal(s.date);
                 if (idx >= 0 && idx < days) buckets[days - 1 - idx] += sessionsOf(s);
             });
             const max = Math.max(1, ...buckets);
             const bars = buckets.map(n => `<div style="height:${(n / max) * 100}%" title="${n.toFixed(1)} sessions"></div>`).join('');
-            const start = new Date(now - (days - 1) * DAY).toISOString().slice(5, 10);
-            const end = new Date(now).toISOString().slice(5, 10);
+            const start = localDateStr(new Date(now - (days - 1) * DAY)).slice(5);
+            const end = localDateStr().slice(5);
             return `<div class="fc-spark">${bars}</div><div class="fc-spark-labels"><span>${start}</span><span>today</span><span>${end}</span></div>`;
         };
 
@@ -698,8 +933,41 @@
         </div>`).join('')}</div>`;
           };
 
+        const renderHeatmap = (summaries) => {
+            const byDate = new Map();
+            summaries.forEach(s => byDate.set(s.date, (byDate.get(s.date) || 0) + sessionsOf(s)));
+            const maxVal = Math.max(1, ...byDate.values());
+
+            const WEEKS = 53, CELL = 12, GAP = 2;
+            const today = new Date();
+            today.setHours(12, 0, 0, 0);
+            const start = new Date(today);
+            start.setDate(start.getDate() - (WEEKS - 1) * 7 - start.getDay());
+
+            const W = WEEKS * (CELL + GAP);
+            const H = 7 * (CELL + GAP);
+
+            let rects = '';
+            for (let w = 0; w < WEEKS; w++) {
+                for (let d = 0; d < 7; d++) {
+                    const dt = new Date(start);
+                    dt.setDate(dt.getDate() + w * 7 + d);
+                    if (dt > today) continue;
+                    const key = localDateStr(dt);
+                    const val = byDate.get(key) || 0;
+                    if (val === 0) {
+                        rects += `<rect x="${w*(CELL+GAP)}" y="${d*(CELL+GAP)}" width="${CELL}" height="${CELL}" rx="2" fill="var(--border)"><title>${key}: 0 sessions</title></rect>`;
+                    } else {
+                        const intensity = Math.max(0.2, Math.min(1, val / maxVal));
+                        rects += `<rect x="${w*(CELL+GAP)}" y="${d*(CELL+GAP)}" width="${CELL}" height="${CELL}" rx="2" fill="var(--accent)" opacity="${intensity}"><title>${key}: ${val.toFixed(1)} sessions</title></rect>`;
+                    }
+                }
+            }
+            return `<svg class="fc-heatmap" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMinYMin meet">${rects}</svg>`;
+        };
+
         const renderForecast = () => {
-            if (!currentData) { fcContent.innerHTML = '<div class="dlv-error">Load the path first (Path tab → Reload).</div>'; return; }
+            if (!currentData) { fcContent.innerHTML = '<div class="dlv-error">Load the path first (Path tab → Reload all).</div>'; return; }
             if (!summariesCache) { fcContent.innerHTML = '<div class="dlv-status">Click "Load activity history" to fetch your activity.</div>'; fcInfo.textContent = ''; return; }
             const win = parseInt(fcWindow.value, 10);
             const pace = computePace(summariesCache, win);
@@ -716,17 +984,52 @@
             const remainingSessions = current ? totalSessions(currentData).total - totalSessions(currentData).done : 0;
 
             let html = '';
-            // Sparkline
-            html += `<div class="fc-card"><h3>Recent activity</h3>${renderSparkline(summariesCache, Math.min(30, Math.max(win || 30, 14)))}`;
+
+            // Today card
+            const todayStr = localDateStr();
+            const todayRec = summariesCache.find(s => s.date === todayStr);
+            const todaySessions = todayRec ? sessionsOf(todayRec) : 0;
+            const goalMet = todaySessions >= dailyGoal;
+            html += `<div class="fc-card">
+              <h3>Today</h3>
+              <div class="fc-big">${todaySessions % 1 === 0 ? todaySessions : todaySessions.toFixed(1)} sessions</div>
+              <div class="fc-meta" style="display:flex;align-items:center;gap:6px;margin-top:8px;flex-wrap:wrap">
+                <span>Goal:</span>
+                <input type="number" class="goal-input" min="1" max="50" value="${dailyGoal}">
+                <span>sessions/day</span>
+                <span class="goal-status ${goalMet ? 'done' : 'pending'}">${goalMet ? '✓ Goal reached!' : `${Math.max(0, dailyGoal - todaySessions).toFixed(0)} to go`}</span>
+              </div>
+            </div>`;
+
+            // Streak & freezes
+            const streak = computeStreak(summariesCache);
+            html += `<div class="fc-card">
+              <h3>Streak &amp; freezes</h3>
+              <div class="plan-metrics">
+                <div class="plan-metric"><div class="k">Current</div><div class="v">${streak.current}<small> days</small></div></div>
+                <div class="plan-metric"><div class="k">Longest</div><div class="v">${streak.longest}<small> days</small></div></div>
+                <div class="plan-metric"><div class="k">Freezes this month</div><div class="v">${streak.freezesUsed}</div></div>
+                <div class="plan-metric"><div class="k">Repaired this month</div><div class="v">${streak.repairedDays}</div></div>
+              </div>
+            </div>`;
+
+            // Recent activity (sparkline window matches pace window)
+            const sparkDays = win > 0 ? win : 90;
+            html += `<div class="fc-card"><h3>Recent activity (${sparkDays} days)</h3>${renderSparkline(summariesCache, sparkDays)}`;
+            if (win > 0) {
+                const cmp = computeComparison(summariesCache, win);
+                if (cmp) {
+                    const arrow = cmp.pct > 0 ? '↑' : cmp.pct < 0 ? '↓' : '→';
+                    const word = Math.abs(cmp.pct) < 5 ? 'similar to' : `${arrow} ${Math.abs(cmp.pct).toFixed(0)}% vs`;
+                    html += `<div class="fc-note">${word} previous ${win} days (${cmp.prevPace.toFixed(2)}/day → ${cmp.currPace.toFixed(2)}/day)</div>`;
+                }
+            }
             if (pace.estimated) html += `<div class="fc-note">⚠ Sessions estimated from XP where exact counts weren't available.</div>`;
             if (endpointUsed) html += `<div class="fc-note">Source: ${esc(endpointUsed)}</div>`;
             html += `</div>`;
 
-            // Today's Progress
-            const todayStr = new Date().toISOString().slice(0, 10);
-            const todayRec = summariesCache.find(s => s.date === todayStr);
-            const todaySessions = todayRec ? sessionsOf(todayRec) : 0;
-            html += `<div class="fc-card"><h3>Today</h3><div class="fc-big">${todaySessions % 1 === 0 ? todaySessions : todaySessions.toFixed(1)} sessions</div><div class="fc-meta">completed so far today</div></div>`;
+            // Contribution heatmap
+            html += `<div class="fc-card"><h3>Contribution heatmap (last 53 weeks)</h3>${renderHeatmap(summariesCache)}</div>`;
 
             // Time projections
             if (time.avgSecPerSession > 0 && remainingSessions > 0) {
@@ -748,18 +1051,15 @@
                 html += `<div class="fc-card"><h3>Current section</h3><div class="fc-big">Section ${esc(current.section.index)}</div><div class="fc-meta">${secRem} sessions · ~${Math.round(secSec / 60)} min · ${fmtDays(secDays)} · finish by <b>${forecastDate(secDays)}</b></div></div>`;
             }
 
-            // Session quality trend
             const quality = computeQuality(summariesCache, Math.max(win || 30, 30));
             if (quality.length > 1) {
                 html += `<div class="fc-card"><h3>Session quality (XP per session)</h3>${renderQuality(quality)}</div>`;
             }
-            // Day-of-week pattern
             const dow = computeDayOfWeek(summariesCache);
             if (dow.some(d => d.total > 0)) {
                 html += `<div class="fc-card"><h3>Day-of-week pattern (avg sessions/day)</h3>${renderDow(dow)}</div>`;
             }
 
-            // Section forecast table
             if (current) {
                 const rows = buildForecast(currentData, currentIdx, pace.pace);
                 const total = rows.length ? rows[rows.length - 1] : null;
@@ -776,144 +1076,200 @@
         };
 
         // ---------- Plan tab ----------
+        const renderGoals = () => {
+            const goalsEl = fcPlanContent.querySelector('#planGoals');
+            if (!goalsEl) return;
+            if (planState.goalMode === 'date') {
+                goalsEl.innerHTML = `
+                  <div class="goal-group">
+                    <label>Avg time per session: <b id="planAvgLabel"></b>
+                      <button class="reset-avg" id="resetAvg" title="Reset to measured average">reset</button>
+                    </label>
+                    <input type="range" id="planAvgSlider" min="1" max="15" step="0.5" value="${planState.avgMins}">
+                  </div>
+                  <div class="goal-group">
+                    <label>Target date</label>
+                    <input type="date" id="planDate" value="${planState.targetDate}">
+                    <div class="goal-meta" id="reqMeta"></div>
+                  </div>`;
+            } else {
+                goalsEl.innerHTML = `
+                  <div class="goal-group">
+                    <label>Avg time per session: <b id="planAvgLabel"></b>
+                      <button class="reset-avg" id="resetAvg" title="Reset to measured average">reset</button>
+                    </label>
+                    <input type="range" id="planAvgSlider" min="1" max="15" step="0.5" value="${planState.avgMins}">
+                  </div>
+                  <div class="goal-group">
+                    <label>Daily study time: <b id="planDailyLabel"></b></label>
+                    <input type="range" id="planDailySlider" min="5" max="180" step="5" value="${planState.dailyMins}">
+                    <div class="goal-meta" id="projMeta"></div>
+                  </div>`;
+            }
+            const avgSlider = goalsEl.querySelector('#planAvgSlider');
+            if (avgSlider) avgSlider.addEventListener('input', (e) => {
+                planState.avgMins = Number(e.target.value);
+                planState.avgMinsIsCustom = true;
+                savePlanState();
+                updatePlanContent();
+            });
+            const resetBtn = goalsEl.querySelector('#resetAvg');
+            if (resetBtn) resetBtn.addEventListener('click', () => {
+                planState.avgMinsIsCustom = false;
+                planState.avgMins = null;
+                savePlanState();
+                renderPlan();
+            });
+            const dateInput = goalsEl.querySelector('#planDate');
+            if (dateInput) dateInput.addEventListener('change', (e) => {
+                planState.targetDate = e.target.value;
+                savePlanState();
+                updatePlanContent();
+            });
+            const dailySlider = goalsEl.querySelector('#planDailySlider');
+            if (dailySlider) dailySlider.addEventListener('input', (e) => {
+                planState.dailyMins = Number(e.target.value);
+                savePlanState();
+                updatePlanContent();
+            });
+        };
+
+        const computeProjDailyMins = (remaining) => {
+            if (planState.goalMode === 'date' && planState.targetDate) {
+                const targetTime = new Date(planState.targetDate + 'T23:59:59').getTime();
+                const daysLeft = Math.max(1, (targetTime - Date.now()) / DAY);
+                return (remaining * planState.avgMins) / daysLeft;
+            }
+            return planState.dailyMins;
+        };
+
+        const updatePlanContent = () => {
+            if (!currentData || !summariesCache) return;
+            const win = parseInt(fcWindow.value, 10);
+            const pace = computePace(summariesCache, win);
+            const timeData = computeTime(summariesCache, win);
+            const totals = totalSessions(currentData);
+            const remaining = totals.total - totals.done;
+            const current = findCurrentPosition(currentData);
+            const currentIdx = current ? currentData.indexOf(current.section) : 0;
+
+            const metrics = fcPlanContent.querySelector('#planMetrics');
+            if (metrics) {
+                metrics.innerHTML = `
+                  <div class="plan-metric"><div class="k">Sessions / day</div><div class="v">${pace.pace.toFixed(1)}</div></div>
+                  <div class="plan-metric"><div class="k">Time / session</div><div class="v">${timeData.avgSecPerSession > 0 ? (timeData.avgSecPerSession/60).toFixed(1) : '—'}<small> min</small></div></div>
+                  <div class="plan-metric"><div class="k">Est. daily</div><div class="v">${Math.round(pace.pace * (timeData.avgSecPerSession/60 || 0))}<small> min</small></div></div>`;
+            }
+            const metaEl = fcPlanContent.querySelector('#planTotalMeta');
+            if (metaEl) metaEl.textContent = `${remaining} sessions remaining to finish the course.`;
+
+            const avgLabel = fcPlanContent.querySelector('#planAvgLabel');
+            if (avgLabel) avgLabel.textContent = planState.avgMins + ' min';
+            const dailyLabel = fcPlanContent.querySelector('#planDailyLabel');
+            if (dailyLabel) dailyLabel.textContent = planState.dailyMins + ' min';
+
+            const projDailyMins = computeProjDailyMins(remaining);
+
+            if (planState.goalMode === 'date') {
+                const targetTime = planState.targetDate ? new Date(planState.targetDate + 'T23:59:59').getTime() : 0;
+                const daysLeft = targetTime > 0 ? Math.max(1, (targetTime - Date.now()) / DAY) : Infinity;
+                const reqSess = isFinite(daysLeft) ? remaining / daysLeft : 0;
+                const reqMeta = fcPlanContent.querySelector('#reqMeta');
+                if (reqMeta) {
+                    if (!planState.targetDate) reqMeta.innerHTML = 'Pick a target date.';
+                    else reqMeta.innerHTML = `Requires <b>${reqSess.toFixed(1)} sessions/day</b> (~${projDailyMins.toFixed(0)} min/day)`;
+                }
+            } else {
+                const totalMins = remaining * planState.avgMins;
+                const projDays = projDailyMins > 0 ? totalMins / projDailyMins : Infinity;
+                const projMeta = fcPlanContent.querySelector('#projMeta');
+                if (projMeta) projMeta.innerHTML = `Finishes in <b>${isFinite(projDays) ? Math.ceil(projDays) : '∞'} days</b> (${forecastDate(projDays)})`;
+            }
+
+            let cumMins = 0;
+            let rowsHtml = '';
+            const currSecIdx = current ? current.section.index : -1;
+            currentData.forEach(sec => {
+                const rem = sectionRemaining(sec);
+                if (rem > 0) {
+                    cumMins += rem * planState.avgMins;
+                    const fDate = projDailyMins > 0 ? forecastDate(cumMins / projDailyMins) : '—';
+                    const cls = sec.index === currSecIdx ? 'curr' : '';
+                    rowsHtml += `<tr class="${cls}"><td><b>Section ${sec.index}</b></td><td>${rem}</td><td>${Math.round(rem * planState.avgMins)} min</td><td>${fDate}</td></tr>`;
+                }
+            });
+            const tbody = fcPlanContent.querySelector('#planTableBody');
+            if (tbody) tbody.innerHTML = rowsHtml;
+
+            const milestones = computeMilestones(currentData, currentIdx, pace.pace);
+            const mRows = milestones.map(m => `<tr><td><b>${esc(m.level)}</b></td><td>${m.date}</td><td><em>${fmtDays(m.days)}</em></td></tr>`).join('');
+            const mBody = fcPlanContent.querySelector('#milestoneBody');
+            if (mBody) mBody.innerHTML = mRows || '<tr><td colspan="3"><em>No milestones remaining</em></td></tr>';
+        };
+
         const renderPlan = () => {
             if (!currentData) { fcPlanContent.innerHTML = '<div class="dlv-error">Load the path first.</div>'; return; }
             if (!summariesCache) { fcPlanContent.innerHTML = '<div class="dlv-status">Load activity history first (Forecast tab).</div>'; return; }
 
             const win = parseInt(fcWindow.value, 10);
-            const pace = computePace(summariesCache, win);
             const timeData = computeTime(summariesCache, win);
-
+            const measuredAvg = timeData.avgSecPerSession > 0
+                ? Math.max(1, Math.min(15, Math.round((timeData.avgSecPerSession / 60) * 2) / 2))
+                : 2;
             if (planState.avgMins === null) {
-                const est = timeData.avgSecPerSession > 0 ? timeData.avgSecPerSession / 60 : 2;
-                planState.avgMins = Math.max(1, Math.min(15, Math.round(est * 2) / 2));
+                planState.avgMins = measuredAvg;
+                savePlanState();
             }
-
-            const update = () => {
-                let remainingLessons = 0;
-                let remainingExtras = 0;
-                currentData.forEach(sec => (sec.units || []).forEach(u => (u.levels || []).forEach(l => {
-                    const rem = levelRemaining(l);
-                    if (rem > 0) {
-                        if (l.type === 'story' || l.type === 'duo_radio') remainingExtras += rem;
-                        else if (l.type === 'skill' || l.type === 'practice' || l.type === 'unit_review') remainingLessons += rem;
-                    }
-                })));
-                
-                const remainingTotal = remainingLessons + remainingExtras;
-                const metaEl = fcPlanContent.querySelector('#planTotalMeta');
-                if (metaEl) {
-                    metaEl.textContent = `${remainingTotal} total sessions remaining (${remainingLessons} lessons/reviews, ${remainingExtras} stories/radios).`;
-                }
-
-                if (remainingTotal === 0) {
-                    fcPlanContent.innerHTML = '<div class="dlv-status">Course complete! 🎉</div>';
-                    return;
-                }
-
-                if (!planState.targetDate) {
-                    planState.targetDate = forecastDate((remainingTotal * planState.avgMins) / planState.dailyMins);
-                }
-
-                const totalMins = remainingTotal * planState.avgMins;
-                const targetTime = new Date(planState.targetDate + 'T23:59:59').getTime();
-                const daysLeft = Math.max(1, (targetTime - Date.now()) / DAY);
-                const reqSess = remainingTotal / daysLeft;
-                const reqMins = reqSess * planState.avgMins;
-
-                const projDays = totalMins / planState.dailyMins;
-                const projDate = forecastDate(projDays);
-
-                const avgLabel = fcPlanContent.querySelector('#planAvgLabel');
-                if (avgLabel) avgLabel.textContent = planState.avgMins + ' min';
-                
-                const dailyLabel = fcPlanContent.querySelector('#planDailyLabel');
-                if (dailyLabel) dailyLabel.textContent = planState.dailyMins + ' min';
-                
-                const reqMeta = fcPlanContent.querySelector('#reqMeta');
-                if (reqMeta) reqMeta.innerHTML = `Requires <b>${reqSess.toFixed(1)} sessions/day</b> (~${reqMins.toFixed(0)} min/day)`;
-                
-                const projMeta = fcPlanContent.querySelector('#projMeta');
-                if (projMeta) projMeta.innerHTML = `Finishes in <b>${Math.ceil(projDays)} days</b> (${projDate})`;
-
-                let cumMins = 0;
-                let rowsHtml = '';
-                currentData.forEach(sec => {
-                    const rem = sectionRemaining(sec);
-                    if (rem > 0) {
-                        const time = rem * planState.avgMins;
-                        cumMins += time;
-                        const fDate = forecastDate(cumMins / planState.dailyMins);
-                        rowsHtml += `<tr><td>Section ${sec.index}</td><td>${rem}</td><td>${Math.round(time)} min</td><td>${fDate}</td></tr>`;
-                    }
-                });
-                const tbody = fcPlanContent.querySelector('#planTableBody');
-                if (tbody) tbody.innerHTML = rowsHtml;
-            };
+            if (!planState.targetDate) {
+                const rem = totalSessions(currentData).total - totalSessions(currentData).done;
+                const days = (rem * planState.avgMins) / planState.dailyMins;
+                planState.targetDate = forecastDate(days);
+                savePlanState();
+            }
 
             if (!fcPlanContent.querySelector('.plan-wrap')) {
                 fcPlanContent.innerHTML = `
-                <div class="plan-wrap">
+                  <div class="plan-wrap">
                     <div class="fc-card">
-                        <h3>Your Current Speed (last ${win === 0 ? 'all time' : win + ' days'})</h3>
-                        <div class="plan-metrics">
-                            <div class="plan-metric">
-                                <div class="k">Sessions / day</div>
-                                <div class="v">${pace.pace.toFixed(1)}</div>
-                            </div>
-                            <div class="plan-metric">
-                                <div class="k">Time / session</div>
-                                <div class="v">${(timeData.avgSecPerSession > 0 ? (timeData.avgSecPerSession/60).toFixed(1) : '—')} min</div>
-                            </div>
-                            <div class="plan-metric">
-                                <div class="k">Est. Daily Time</div>
-                                <div class="v">${Math.round(pace.pace * (timeData.avgSecPerSession/60 || 0))} min</div>
-                            </div>
-                        </div>
-                        <div class="fc-meta" id="planTotalMeta"></div>
+                      <h3>Your current speed</h3>
+                      <div class="plan-metrics" id="planMetrics"></div>
+                      <div class="fc-meta" id="planTotalMeta"></div>
                     </div>
-
-                    <div class="plan-goals">
-                        <div class="goal-group">
-                            <label>Avg Time per Session: <b id="planAvgLabel"></b></label>
-                            <input type="range" id="planAvgSlider" min="1" max="15" step="0.5" value="${planState.avgMins}">
-                        </div>
-                        <div class="goal-group">
-                            <label>Target Completion Date</label>
-                            <input type="date" id="planDate" value="${planState.targetDate}">
-                            <div class="goal-meta" id="reqMeta"></div>
-                        </div>
-                        <div class="goal-group">
-                            <label>Daily Study Time: <b id="planDailyLabel"></b></label>
-                            <input type="range" id="planDailySlider" min="5" max="180" step="5" value="${planState.dailyMins}">
-                            <div class="goal-meta" id="projMeta"></div>
-                        </div>
+                    <div class="plan-mode-toggle">
+                      <button data-mode="date" class="${planState.goalMode === 'date' ? 'active' : ''}">Target date</button>
+                      <button data-mode="time" class="${planState.goalMode === 'time' ? 'active' : ''}">Daily time</button>
                     </div>
-
+                    <div class="plan-goals" id="planGoals"></div>
                     <div class="fc-card">
-                        <h3>Section-by-Section Breakdown</h3>
-                        <table class="fc-table">
-                            <thead><tr><th>Section</th><th>Sessions Left</th><th>Time Left</th><th>Projected Finish</th></tr></thead>
-                            <tbody id="planTableBody"></tbody>
-                        </table>
+                      <h3>CEFR milestones</h3>
+                      <table class="fc-table">
+                        <thead><tr><th>Level</th><th>Finishes on</th><th>From now</th></tr></thead>
+                        <tbody id="milestoneBody"></tbody>
+                      </table>
                     </div>
-                </div>`;
+                    <div class="fc-card">
+                      <h3>Section-by-section breakdown</h3>
+                      <table class="fc-table">
+                        <thead><tr><th>Section</th><th>Sessions left</th><th>Time left</th><th>Projected finish</th></tr></thead>
+                        <tbody id="planTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>`;
 
-                fcPlanContent.querySelector('#planAvgSlider').addEventListener('input', (e) => {
-                    planState.avgMins = Number(e.target.value);
-                    update();
+                fcPlanContent.querySelectorAll('.plan-mode-toggle button').forEach(b => {
+                    b.addEventListener('click', () => {
+                        planState.goalMode = b.dataset.mode;
+                        savePlanState();
+                        fcPlanContent.querySelectorAll('.plan-mode-toggle button').forEach(x => {
+                            x.classList.toggle('active', x.dataset.mode === planState.goalMode);
+                        });
+                        renderGoals();
+                        updatePlanContent();
+                    });
                 });
-                fcPlanContent.querySelector('#planDate').addEventListener('change', (e) => {
-                    planState.targetDate = e.target.value;
-                    update();
-                });
-                fcPlanContent.querySelector('#planDailySlider').addEventListener('input', (e) => {
-                    planState.dailyMins = Number(e.target.value);
-                    update();
-                });
+                renderGoals();
             }
-
-            update();
+            updatePlanContent();
         };
 
         // ---------- Export helpers ----------
@@ -923,19 +1279,22 @@
             const blob = new Blob([JSON.stringify({ pathSectioned: getFilteredOrAll() }, null, 2)], { type: 'application/json' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `duolingo-path-${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `duolingo-path-${localDateStr()}.json`;
             document.body.appendChild(a); a.click(); a.remove();
             setTimeout(() => URL.revokeObjectURL(a.href), 1000);
         };
 
         const doCsv = () => {
             const sections = getFilteredOrAll();
-            const rows = [['Section', 'Unit', 'Type', 'Label', 'State', 'Sessions Done', 'Sessions Total']];
+            const rows = [['Section', 'CEFR', 'Unit', 'Type', 'Label', 'State', 'Sessions Done', 'Sessions Total']];
             sections.forEach(sec => (sec.units || []).forEach(u => (u.levels || []).forEach(l => {
                 const r = levelSessions(l);
                 const c = l.pathLevelClientData || {};
                 rows.push([
-                    sec.index, u.unitNumber, l.type,
+                    sec.index,
+                    sec.cefr?.level || sec.cefrLevel || '',
+                    u.unitNumber,
+                    l.type,
                     c.teachingObjective || c.duoRadioSummary?.name || c.storyName || l.debugName || '',
                     l.state, r.done, r.total
                 ]);
@@ -947,18 +1306,27 @@
             const blob = new Blob([csv], { type: 'text/csv' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `duolingo-path-${new Date().toISOString().slice(0, 10)}.csv`;
+            a.download = `duolingo-path-${localDateStr()}.csv`;
             document.body.appendChild(a); a.click(); a.remove();
             setTimeout(() => URL.revokeObjectURL(a.href), 1000);
         };
 
         const doMarkdown = () => {
             const sections = getFilteredOrAll();
-            let md = `# ${currentCourseName} — Study Plan\n\n`;
-            md += `_Generated ${new Date().toISOString().slice(0, 10)}_\n\n`;
+            const totals = totalSessions(sections);
+            const pct = totals.total > 0 ? Math.round(totals.done / totals.total * 100) : 0;
+            let md = '---\n';
+            md += `course: ${currentCourseName}\n`;
+            md += `generated: ${localDateStr()}\n`;
+            md += `total_sessions: ${totals.total}\n`;
+            md += `completed_sessions: ${totals.done}\n`;
+            md += `percent_complete: ${pct}\n`;
+            md += '---\n\n';
+            md += `# ${currentCourseName} — Study Plan\n\n`;
             sections.forEach(sec => {
                 const ss = sectionSessions(sec);
-                md += `## Section ${sec.index} [${sec.type}] — ${ss.done}/${ss.total} sessions\n\n`;
+                const cefr = sec.cefr?.level || sec.cefrLevel || '';
+                md += `## Section ${sec.index}${cefr ? ` (${cefr})` : ''} [${sec.type}] — ${ss.done}/${ss.total} sessions\n\n`;
                 (sec.units || []).forEach(u => {
                     const us = unitSessions(u);
                     md += `### Unit ${u.unitNumber} — ${u.teachingObjective || '(no title)'} (${us.done}/${us.total})\n\n`;
@@ -975,57 +1343,66 @@
             const blob = new Blob([md], { type: 'text/markdown' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `duolingo-plan-${new Date().toISOString().slice(0, 10)}.md`;
+            a.download = `duolingo-plan-${localDateStr()}.md`;
             document.body.appendChild(a); a.click(); a.remove();
             setTimeout(() => URL.revokeObjectURL(a.href), 1000);
         };
 
         const doPrint = () => {
             const sections = getFilteredOrAll();
-            const w = window.open('', '_blank');
-            if (!w) return;
+            const remaining = totalSessions(sections).total - totalSessions(sections).done;
+            const projDailyMins = computeProjDailyMins(remaining);
+
+            // Compute per-unit finish dates based on the plan's avgMins + projDailyMins
+            let cumMins = 0;
             const html = sections.map(sec => {
                 const ss = sectionSessions(sec);
+                const cefr = sec.cefr?.level || sec.cefrLevel || '';
                 return `<section>
-          <h2>Section ${sec.index} <small>[${sec.type}] — ${ss.done}/${ss.total}</small></h2>
-          ${(sec.units || []).map(u => {
-                  const us = unitSessions(u);
-                  return `<div class="unit">
-              <h3>Unit ${u.unitNumber} — ${esc(u.teachingObjective || '')} <small>(${us.done}/${us.total})</small></h3>
-              <ul>${(u.levels || []).map(l => {
-                const r = levelSessions(l);
-                const c = l.pathLevelClientData || {};
-                const label = c.teachingObjective || c.duoRadioSummary?.name || c.storyName || l.debugName;
-                const done = COMPLETE_STATES.has(l.state) || r.done >= r.total;
-                return `<li><label><input type="checkbox" ${done ? 'checked' : ''} disabled> <span class="type">[${l.type}]</span> ${esc(label)} <span class="sess">${r.done}/${r.total}</span></label></li>`;
-            }).join('')}</ul>
-            </div>`;
-              }).join('')}
-        </section>`;
-          }).join('');
-          w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(currentCourseName)} — Study Plan</title>
-        <style>
-          body { font-family: system-ui, sans-serif; max-width: 900px; margin: 20px auto; padding: 0 20px; color: #222; }
-          h1 { font-size: 22px; margin: 0 0 6px; }
-          h2 { font-size: 16px; margin: 24px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #58cc02; }
-          h3 { font-size: 14px; margin: 12px 0 4px; }
-          small { color: #888; font-weight: normal; font-size: 12px; }
-          ul { list-style: none; padding-left: 8px; margin: 4px 0; }
-          li { padding: 2px 0; font-size: 13px; }
-          label { cursor: default; display: flex; align-items: center; gap: 6px; }
-          input[type=checkbox] { margin: 0; }
-          .type { color: #666; font-size: 11px; }
-          .sess { font-family: monospace; color: #066; font-size: 11px; margin-left: auto; }
-          .meta { color: #888; font-size: 12px; margin-bottom: 16px; }
-          @media print { h2 { page-break-after: avoid; } h3 { page-break-after: avoid; } section { page-break-inside: auto; } }
-        </style>
-        </head><body>
-        <h1>${esc(currentCourseName)} — Study Plan</h1>
-        <div class="meta">Generated ${new Date().toISOString().slice(0, 10)} · Press Ctrl+P / Cmd+P to save as PDF</div>
-        ${html}
-        </body></html>`);
-          w.document.close();
-      };
+                  <h2>Section ${sec.index}${cefr ? ` (${cefr})` : ''} <small>[${sec.type}] — ${ss.done}/${ss.total}</small></h2>
+                  ${(sec.units || []).map(u => {
+                      cumMins += unitRemaining(u) * planState.avgMins;
+                      const finishDays = projDailyMins > 0 ? cumMins / projDailyMins : Infinity;
+                      const finishStr = isFinite(finishDays) && unitRemaining(u) > 0 ? ` · est. ${forecastDate(finishDays)}` : '';
+                      const us = unitSessions(u);
+                      return `<div class="unit">
+                          <h3>Unit ${u.unitNumber} — ${esc(u.teachingObjective || '')} <small>(${us.done}/${us.total}${finishStr})</small></h3>
+                          <ul>${(u.levels || []).map(l => {
+                              const r = levelSessions(l);
+                              const c = l.pathLevelClientData || {};
+                              const label = c.teachingObjective || c.duoRadioSummary?.name || c.storyName || l.debugName;
+                              const done = COMPLETE_STATES.has(l.state) || r.done >= r.total;
+                              return `<li><label><input type="checkbox" ${done ? 'checked' : ''} disabled> <span class="type">[${l.type}]</span> ${esc(label)} <span class="sess">${r.done}/${r.total}</span></label></li>`;
+                          }).join('')}</ul>
+                      </div>`;
+                  }).join('')}
+                </section>`;
+            }).join('');
+            const w = window.open('', '_blank');
+            if (!w) return;
+            w.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>${esc(currentCourseName)} — Study Plan</title>
+            <style>
+              body { font-family: system-ui, sans-serif; max-width: 900px; margin: 20px auto; padding: 0 20px; color: #222; }
+              h1 { font-size: 22px; margin: 0 0 6px; }
+              h2 { font-size: 16px; margin: 24px 0 8px; padding-bottom: 4px; border-bottom: 2px solid #58cc02; }
+              h3 { font-size: 14px; margin: 12px 0 4px; }
+              small { color: #888; font-weight: normal; font-size: 12px; }
+              ul { list-style: none; padding-left: 8px; margin: 4px 0; }
+              li { padding: 2px 0; font-size: 13px; }
+              label { cursor: default; display: flex; align-items: center; gap: 6px; }
+              input[type=checkbox] { margin: 0; }
+              .type { color: #666; font-size: 11px; }
+              .sess { font-family: monospace; color: #066; font-size: 11px; margin-left: auto; }
+              .meta { color: #888; font-size: 12px; margin-bottom: 16px; }
+              @media print { h2 { page-break-after: avoid; } h3 { page-break-after: avoid; } section { page-break-inside: auto; } }
+            </style>
+            </head><body>
+            <h1>${esc(currentCourseName)} — Study Plan</h1>
+            <div class="meta">Generated ${localDateStr()} · Press Ctrl+P / Cmd+P to save as PDF</div>
+            ${html}
+            </body></html>`);
+            w.document.close();
+        };
 
         const doPng = () => {
             const totals = totalSessions(currentData);
@@ -1036,14 +1413,10 @@
             const projDate = pace && pace.pace > 0 ? forecastDate(remaining / pace.pace) : '—';
             let streak = 0;
             if (summariesCache) {
-                const sorted = [...summariesCache].sort((a, b) => b.date.localeCompare(a.date));
-                for (const s of sorted) {
-                    if (sessionsOf(s) > 0 || s.xp > 0) streak++;
-                    else if (s.frozen || s.repaired) continue;
-                    else break;
-                }
+                streak = computeStreak(summariesCache).current;
             }
 
+            const isDark = inner.classList.contains('dark');
             const W = 800, H = 420;
             const c = document.createElement('canvas');
             c.width = W; c.height = H;
@@ -1055,26 +1428,30 @@
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, W, H);
 
-            ctx.fillStyle = '#fff';
+            ctx.fillStyle = isDark ? '#1a1a1a' : '#fff';
             roundRect(ctx, 30, 30, W - 60, H - 60, 20);
             ctx.fill();
 
-            ctx.fillStyle = '#333';
+            const fgColor = isDark ? '#e0e0e0' : '#333';
+            const mutedColor = isDark ? '#999' : '#888';
+            const lineColor = isDark ? '#333' : '#eee';
+
+            ctx.fillStyle = fgColor;
             ctx.font = 'bold 22px system-ui, sans-serif';
             ctx.fillText(currentCourseName || 'Duolingo Progress', 60, 90);
 
-            ctx.strokeStyle = '#eee';
+            ctx.strokeStyle = lineColor;
             ctx.lineWidth = 1;
             ctx.beginPath(); ctx.moveTo(60, 110); ctx.lineTo(W - 60, 110); ctx.stroke();
 
             ctx.fillStyle = '#58cc02';
             ctx.font = 'bold 84px system-ui, sans-serif';
             ctx.fillText(`${percent}%`, 60, 230);
-            ctx.fillStyle = '#888';
+            ctx.fillStyle = mutedColor;
             ctx.font = '14px system-ui, sans-serif';
             ctx.fillText('of the course complete', 60, 255);
 
-            ctx.fillStyle = '#333';
+            ctx.fillStyle = fgColor;
             ctx.font = '16px system-ui, sans-serif';
             ctx.fillText(current ? `Section ${current.section.index} · ${current.unit.teachingObjective || 'Unit ' + current.unit.unitNumber}` : 'Course complete 🎉', 60, 300);
 
@@ -1087,28 +1464,33 @@
                 [projDate, 'projected finish']
             ];
             stats.forEach(([val, label]) => {
-                ctx.fillStyle = '#333';
+                ctx.fillStyle = fgColor;
                 ctx.font = 'bold 22px system-ui, sans-serif';
                 ctx.fillText(val, rx, ry);
-                ctx.fillStyle = '#888';
+                ctx.fillStyle = mutedColor;
                 ctx.font = '12px system-ui, sans-serif';
                 ctx.fillText(label, rx, ry + 18);
                 ry += 58;
             });
 
-            ctx.fillStyle = '#ccc';
+            ctx.fillStyle = isDark ? '#555' : '#ccc';
             ctx.font = '11px system-ui, sans-serif';
-            ctx.fillText(`duolingo path viewer · ${new Date().toISOString().slice(0, 10)}`, 60, H - 50);
+            ctx.fillText(`duolingo path viewer · ${localDateStr()}`, 60, H - 50);
 
             const a = document.createElement('a');
             a.href = c.toDataURL('image/png');
-            a.download = `duolingo-progress-${new Date().toISOString().slice(0, 10)}.png`;
+            a.download = `duolingo-progress-${localDateStr()}.png`;
             document.body.appendChild(a); a.click(); a.remove();
         };
 
         // ---------- Activity fetch ----------
-        const fetchAndRender = async () => {
+        const fetchAndRender = async (force = false) => {
             if (!currentData) { fcContent.innerHTML = '<div class="dlv-error">Load the path first.</div>'; return; }
+            if (!force && summariesCache && summariesFetchedAt && (Date.now() - summariesFetchedAt < 5 * 60 * 1000)) {
+                renderForecast();
+                renderPlan();
+                return;
+            }
             const token = currentToken || (currentState ? getAuthToken(currentState) : null);
             const userId = currentUserId || (currentState ? findUserId(currentState, token) : null);
             if (!token) { fcContent.innerHTML = '<div class="dlv-error">No auth token captured. Reload the Duolingo page, browse to /learn, then retry.</div>'; return; }
@@ -1118,6 +1500,7 @@
             try {
                 const res = await fetchDailySummaries(userId, token, 400);
                 summariesCache = res.list;
+                summariesFetchedAt = Date.now();
                 endpointUsed = res.endpoint;
                 renderForecast();
                 renderPlan();
@@ -1132,13 +1515,20 @@
         btn.addEventListener('click', () => { modal.classList.add('open'); if (!currentData) loadPath(); });
         closeBtn.addEventListener('click', () => modal.classList.remove('open'));
         modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
-        refreshBtn.addEventListener('click', loadPath);
+
+        refreshBtn.addEventListener('click', async () => {
+            const hadActivity = !!summariesCache;
+            await loadPath();
+            if (hadActivity && currentData) await fetchAndRender(true);
+        });
+
         downloadBtn.addEventListener('click', doJson);
         themeBtn.addEventListener('click', () => {
             const isDark = inner.classList.toggle('dark');
             themeBtn.textContent = isDark ? '☀️' : '🌙';
             localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light');
         });
+        vbClose.addEventListener('click', () => { visitBanner.style.display = 'none'; });
 
         let filterTimer = null;
         const onFilter = () => { clearTimeout(filterTimer); filterTimer = setTimeout(renderPath, 120); };
@@ -1148,9 +1538,42 @@
         filterClear.addEventListener('click', () => {
             filterText.value = ''; filterType.value = 'all'; filterState.value = 'all'; renderPath();
         });
+        filterExpand.addEventListener('click', () => {
+            pathContent.querySelectorAll('details').forEach(d => d.open = true);
+        });
+        filterCollapse.addEventListener('click', () => {
+            pathContent.querySelectorAll('details.unit-done').forEach(d => d.open = false);
+            pathContent.querySelectorAll('details.done').forEach(d => d.open = false);
+        });
 
-        loadBtn.addEventListener('click', fetchAndRender);
-        fcWindow.addEventListener('change', () => { if (summariesCache) { renderForecast(); renderPlan(); } });
+        loadBtn.addEventListener('click', () => fetchAndRender(false));
+        fcWindow.addEventListener('change', () => {
+            if (!planState.avgMinsIsCustom) {
+                planState.avgMins = null;
+                savePlanState();
+            }
+            if (summariesCache) { renderForecast(); renderPlan(); }
+        });
+
+        // Daily goal input delegation
+        fcContent.addEventListener('input', (e) => {
+            if (e.target.classList.contains('goal-input')) {
+                const v = parseInt(e.target.value, 10);
+                if (isFinite(v) && v >= 1 && v <= 50) {
+                    dailyGoal = v;
+                    localStorage.setItem(GOAL_KEY, String(dailyGoal));
+                    const todayStr = localDateStr();
+                    const todayRec = summariesCache ? summariesCache.find(s => s.date === todayStr) : null;
+                    const todaySessions = todayRec ? sessionsOf(todayRec) : 0;
+                    const status = fcContent.querySelector('.goal-status');
+                    if (status) {
+                        const met = todaySessions >= dailyGoal;
+                        status.textContent = met ? '✓ Goal reached!' : `${Math.max(0, dailyGoal - todaySessions).toFixed(0)} to go`;
+                        status.className = 'goal-status ' + (met ? 'done' : 'pending');
+                    }
+                }
+            }
+        });
 
         exJson.addEventListener('click', doJson);
         exCsv.addEventListener('click', doCsv);
